@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard | UBC</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root {
+      --navy:#0a1628; --navy-mid:#132040; --navy-light:#1e3a6e;
+      --gold:#c9a84c; --gold-light:#e8c96d;
+      --white:#fff; --off-white:#f8f6f0;
+      --gray:#6b7280; --light-gray:#e5e7eb;
+      --red:#dc2626; --green:#16a34a; --blue:#2563eb;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Outfit',sans-serif; background:var(--off-white); display:flex; min-height:100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px; min-height: 100vh;
+      background: var(--navy);
+      border-right: 1px solid rgba(201,168,76,0.15);
+      display: flex; flex-direction: column;
+      position: fixed; top:0; left:0; bottom:0;
+      z-index: 100;
+    }
+    .sidebar-brand {
+      padding: 1.5rem;
+      border-bottom: 1px solid rgba(201,168,76,0.15);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .sidebar-brand img { width:44px; height:44px; border-radius:50%; border:2px solid var(--gold); background:#000; object-fit:contain; }
+    .sidebar-brand-text h3 { font-family:'Playfair Display',serif; color:var(--white); font-size:0.95rem; }
+    .sidebar-brand-text p { color:var(--gold); font-size:0.68rem; letter-spacing:1.5px; }
+
+    .sidebar-user {
+      padding: 1rem 1.5rem;
+      background: rgba(201,168,76,0.05);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .sidebar-user p { color:rgba(255,255,255,0.5); font-size:0.72rem; }
+    .sidebar-user strong { color:var(--gold); font-size:0.88rem; }
+
+    .sidebar-nav { flex:1; padding:1rem 0; }
+    .nav-item {
+      display:flex; align-items:center; gap:12px;
+      padding: 11px 1.5rem;
+      color: rgba(255,255,255,0.65);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      border-left: 3px solid transparent;
+      cursor: pointer; background:none; border-right:none; width:100%; text-align:left;
+    }
+    .nav-item:hover, .nav-item.active { color:var(--gold); background:rgba(201,168,76,0.07); border-left-color:var(--gold); }
+    .nav-item i { width:18px; text-align:center; }
+
+    .sidebar-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .logout-btn {
+      width:100%; background:rgba(220,38,38,0.1); border:1px solid rgba(220,38,38,0.2);
+      color:#fca5a5; padding:10px; border-radius:8px; cursor:pointer;
+      font-family:'Outfit',sans-serif; font-size:0.85rem; font-weight:600;
+      display:flex; align-items:center; justify-content:center; gap:8px;
+      transition:all 0.2s;
+    }
+    .logout-btn:hover { background:rgba(220,38,38,0.2); }
+
+    /* Main Content */
+    .main-content { margin-left:260px; flex:1; padding:2rem; }
+
+    .dash-header { margin-bottom:2rem; display:flex; align-items:center; justify-content:space-between; }
+    .dash-header h1 { font-family:'Playfair Display',serif; font-size:1.7rem; color:var(--navy); }
+    .dash-header p { color:var(--gray); font-size:0.85rem; margin-top:2px; }
+    .date-badge {
+      background:var(--white); border:1px solid var(--light-gray);
+      padding:8px 16px; border-radius:8px; font-size:0.82rem; color:var(--gray);
+      display:flex; align-items:center; gap:6px;
+    }
+
+    /* Stats Cards */
+    .stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; margin-bottom:2rem; }
+    .stat-card {
+      background:var(--white); border-radius:14px; padding:1.5rem;
+      border:1px solid var(--light-gray); box-shadow:0 2px 12px rgba(0,0,0,0.06);
+      display:flex; align-items:center; gap:1.2rem;
+    }
+    .stat-card-icon {
+      width:52px; height:52px; border-radius:12px;
+      display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0;
+    }
+    .stat-card-icon.gold { background:rgba(201,168,76,0.12); color:var(--gold); }
+    .stat-card-icon.red { background:rgba(220,38,38,0.1); color:var(--red); }
+    .stat-card-icon.green { background:rgba(22,163,74,0.1); color:var(--green); }
+    .stat-card-num { font-family:'Playfair Display',serif; font-size:2rem; color:var(--navy); font-weight:700; line-height:1; }
+    .stat-card-label { color:var(--gray); font-size:0.82rem; margin-top:4px; }
+
+    /* Table */
+    .table-card { background:var(--white); border-radius:14px; border:1px solid var(--light-gray); box-shadow:0 2px 12px rgba(0,0,0,0.06); overflow:hidden; }
+    .table-header { padding:1.3rem 1.5rem; border-bottom:1px solid var(--light-gray); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; }
+    .table-header h3 { font-size:1rem; color:var(--navy); font-weight:700; display:flex; align-items:center; gap:8px; }
+    .table-header h3 i { color:var(--gold); }
+    .search-box { position:relative; }
+    .search-box i { position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--gray); font-size:0.82rem; }
+    .search-box input { padding:8px 14px 8px 32px; border:1.5px solid var(--light-gray); border-radius:8px; font-family:'Outfit',sans-serif; font-size:0.85rem; outline:none; width:220px; }
+    .search-box input:focus { border-color:var(--gold); }
+
+    .enq-table { width:100%; border-collapse:collapse; }
+    .enq-table th { padding:10px 14px; text-align:left; font-size:0.75rem; font-weight:700; color:var(--gray); text-transform:uppercase; letter-spacing:0.8px; background:var(--off-white); border-bottom:1px solid var(--light-gray); }
+    .enq-table td { padding:12px 14px; border-bottom:1px solid rgba(229,231,235,0.5); font-size:0.85rem; color:var(--navy); }
+    .enq-table tr:last-child td { border-bottom:none; }
+    .enq-table tr:hover td { background:rgba(201,168,76,0.03); }
+    .enq-table tr.unread td { background:rgba(201,168,76,0.04); }
+    .enq-table tr.unread td:first-child { border-left:3px solid var(--gold); }
+
+    .badge { padding:3px 10px; border-radius:50px; font-size:0.72rem; font-weight:600; }
+    .badge-new { background:rgba(201,168,76,0.15); color:#92600a; }
+    .badge-read { background:var(--light-gray); color:var(--gray); }
+
+    .action-btns { display:flex; gap:6px; }
+    .btn-sm {
+      padding:5px 10px; border-radius:6px; border:none; cursor:pointer;
+      font-size:0.75rem; font-weight:600; transition:all 0.2s;
+      display:flex; align-items:center; gap:4px; font-family:'Outfit',sans-serif;
+    }
+    .btn-sm.mark { background:rgba(22,163,74,0.1); color:var(--green); }
+    .btn-sm.mark:hover { background:var(--green); color:white; }
+    .btn-sm.del { background:rgba(220,38,38,0.1); color:var(--red); }
+    .btn-sm.del:hover { background:var(--red); color:white; }
+
+    .empty-state { text-align:center; padding:4rem 2rem; color:var(--gray); }
+    .empty-state i { font-size:3rem; color:var(--light-gray); margin-bottom:1rem; }
+    .empty-state h3 { color:var(--navy); margin-bottom:0.5rem; }
+
+    .product-tag { background:rgba(10,22,40,0.08); color:var(--navy); padding:2px 8px; border-radius:4px; font-size:0.75rem; }
+
+    @media(max-width:900px) {
+      .sidebar { width:60px; }
+      .sidebar-brand-text, .sidebar-user, .nav-item span, .sidebar-footer { display:none; }
+      .main-content { margin-left:60px; }
+      .stats-row { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="UBC"/>
+    <div class="sidebar-brand-text">
+      <h3>UBC Admin</h3>
+      <p>MANAGEMENT PORTAL</p>
+    </div>
+  </div>
+  <div class="sidebar-user">
+    <p>Logged in as</p>
+    <strong>{{ session.admin_name }}</strong>
+  </div>
+  <nav class="sidebar-nav">
+    <a class="nav-item active" href="/admin/dashboard"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+    <a class="nav-item" href="/admin/dashboard"><i class="fas fa-envelope-open-text"></i><span>All Enquiries</span></a>
+    <a class="nav-item" href="/admin/applications"><i class="fas fa-user-tie"></i><span>Job Applications</span></a>
+    <a class="nav-item" href="/admin/slider"><i class="fas fa-images"></i><span>Homepage Slider</span></a>
+    <a class="nav-item" href="/admin/products"><i class="fas fa-bolt"></i><span>Products</span></a>
+    <a class="nav-item" href="/admin/past-work"><i class="fas fa-folder-open"></i><span>Past Work</span></a>
+    <a class="nav-item" href="/admin/certificates"><i class="fas fa-certificate"></i><span>Certificates</span></a>
+    <a class="nav-item" href="/"><i class="fas fa-globe"></i><span>View Website</span></a>
+  </nav>
+  <div class="sidebar-footer">
+    <a href="/admin/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+  </div>
+</aside>
+
+<!-- Main Content -->
+<main class="main-content">
+  <div class="dash-header">
+    <div>
+      <h1>Enquiry Dashboard</h1>
+      <p>Welcome back, {{ session.admin_name }} — here are the latest customer enquiries</p>
+    </div>
+    <div class="date-badge"><i class="fas fa-calendar"></i> <span id="currentDate"></span></div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-card-icon gold"><i class="fas fa-envelope-open-text"></i></div>
+      <div>
+        <div class="stat-card-num">{{ total }}</div>
+        <div class="stat-card-label">Total Enquiries</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-icon red"><i class="fas fa-bell"></i></div>
+      <div>
+        <div class="stat-card-num">{{ unread }}</div>
+        <div class="stat-card-label">Unread / New</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-icon green"><i class="fas fa-check-circle"></i></div>
+      <div>
+        <div class="stat-card-num">{{ total - unread }}</div>
+        <div class="stat-card-label">Read / Processed</div>
+      </div>
+    </div>
+    <a href="/admin/certificates" class="stat-card" style="text-decoration:none; cursor:pointer; border:2px solid rgba(201,168,76,0.2); transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='rgba(201,168,76,0.2)'">
+      <div class="stat-card-icon" style="background:rgba(201,168,76,0.12); color:var(--gold);"><i class="fas fa-certificate"></i></div>
+      <div>
+        <div class="stat-card-num">{{ cert_count }}</div>
+        <div class="stat-card-label">Certificates</div>
+      </div>
+    </a>
+    <a href="/admin/applications" class="stat-card" style="text-decoration:none; cursor:pointer; border:2px solid {% if app_count %}rgba(220,38,38,0.3){% else %}rgba(201,168,76,0.2){% endif %}; transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='rgba(201,168,76,0.2)'">
+      <div class="stat-card-icon" style="background:rgba(99,102,241,0.1); color:#6366f1;"><i class="fas fa-user-tie"></i></div>
+      <div>
+        <div class="stat-card-num">{{ app_count }}</div>
+        <div class="stat-card-label">New Applications</div>
+      </div>
+    </a>
+  </div>
+
+  <!-- Quick Actions -->
+  <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:1rem; margin-bottom:2rem;">
+    <a href="/admin/applications" style="background:linear-gradient(135deg,#1e1b4b,#312e81);border-radius:14px;padding:1.3rem;display:flex;align-items:center;gap:1rem;text-decoration:none;border:1px solid rgba(99,102,241,0.25);transition:all 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+      <div style="width:46px;height:46px;background:rgba(99,102,241,0.2);border:1px solid rgba(99,102,241,0.3);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:#a5b4fc;flex-shrink:0;"><i class="fas fa-user-tie"></i></div>
+      <div><div style="color:#fff;font-weight:700;font-size:0.88rem;">Applications</div><div style="color:rgba(255,255,255,0.5);font-size:0.74rem;margin-top:2px;">Careers form</div></div>
+    </a>
+    <a href="/admin/slider" style="background:linear-gradient(135deg,#1e3a5f,#2d5282);border-radius:14px;padding:1.3rem;display:flex;align-items:center;gap:1rem;text-decoration:none;border:1px solid rgba(99,179,237,0.2);transition:all 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+      <div style="width:46px;height:46px;background:rgba(99,179,237,0.15);border:1px solid rgba(99,179,237,0.3);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:#90cdf4;flex-shrink:0;"><i class="fas fa-images"></i></div>
+      <div><div style="color:#fff;font-weight:700;font-size:0.88rem;">Slider</div><div style="color:rgba(255,255,255,0.5);font-size:0.74rem;margin-top:2px;">Homepage slides</div></div>
+    </a>
+    <a href="/admin/products" style="background:linear-gradient(135deg,#78350f,#92400e);border-radius:14px;padding:1.3rem;display:flex;align-items:center;gap:1rem;text-decoration:none;border:1px solid rgba(251,191,36,0.2);transition:all 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+      <div style="width:46px;height:46px;background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.3);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:#fbbf24;flex-shrink:0;"><i class="fas fa-bolt"></i></div>
+      <div><div style="color:#fff;font-weight:700;font-size:0.88rem;">Products</div><div style="color:rgba(255,255,255,0.5);font-size:0.74rem;margin-top:2px;">Add new products</div></div>
+    </a>
+    <a href="/admin/past-work" style="background:linear-gradient(135deg,#064e3b,#065f46);border-radius:14px;padding:1.3rem;display:flex;align-items:center;gap:1rem;text-decoration:none;border:1px solid rgba(52,211,153,0.2);transition:all 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+      <div style="width:46px;height:46px;background:rgba(52,211,153,0.15);border:1px solid rgba(52,211,153,0.3);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:#6ee7b7;flex-shrink:0;"><i class="fas fa-folder-open"></i></div>
+      <div><div style="color:#fff;font-weight:700;font-size:0.88rem;">Past Work</div><div style="color:rgba(255,255,255,0.5);font-size:0.74rem;margin-top:2px;">Projects & clients</div></div>
+    </a>
+    <a href="/admin/certificates" style="background:linear-gradient(135deg,#0a1628,#1e3a6e);border-radius:14px;padding:1.3rem;display:flex;align-items:center;gap:1rem;text-decoration:none;border:1px solid rgba(201,168,76,0.2);transition:all 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+      <div style="width:46px;height:46px;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.3);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:#c9a84c;flex-shrink:0;"><i class="fas fa-certificate"></i></div>
+      <div><div style="color:#fff;font-weight:700;font-size:0.88rem;">Certificates</div><div style="color:rgba(255,255,255,0.5);font-size:0.74rem;margin-top:2px;">Add or remove</div></div>
+    </a>
+  </div>
+
+  <!-- Enquiries Table -->
+  <div class="table-card">
+    <div class="table-header">
+      <h3><i class="fas fa-list"></i> Customer Enquiries</h3>
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchInput" placeholder="Search enquiries..." oninput="filterTable()"/>
+      </div>
+    </div>
+
+    {% if enquiries %}
+    <div style="overflow-x:auto;">
+      <table class="enq-table" id="enquiryTable">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Status</th>
+            <th>Customer Name</th>
+            <th>Contact</th>
+            <th>Email</th>
+            <th>Product</th>
+            <th>Requirements</th>
+            <th>Date & Time</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for e in enquiries %}
+          <tr id="row-{{ e.id }}" class="{% if not e.is_read %}unread{% endif %}">
+            <td style="color:var(--gray); font-size:0.78rem;">#{{ e.id }}</td>
+            <td>
+              {% if e.is_read %}
+              <span class="badge badge-read"><i class="fas fa-check"></i> Read</span>
+              {% else %}
+              <span class="badge badge-new"><i class="fas fa-circle" style="font-size:0.5rem;"></i> New</span>
+              {% endif %}
+            </td>
+            <td style="font-weight:600;">{{ e.name }}</td>
+            <td><a href="tel:{{ e.contact }}" style="color:var(--navy); text-decoration:none;">{{ e.contact }}</a></td>
+            <td><a href="mailto:{{ e.email }}" style="color:#2563eb; text-decoration:none; font-size:0.82rem;">{{ e.email }}</a></td>
+            <td>{% if e.product %}<span class="product-tag">{{ e.product }}</span>{% else %}<span style="color:var(--gray);">—</span>{% endif %}</td>
+            <td style="max-width:200px; font-size:0.82rem; color:var(--gray);">{{ e.requirements[:60] + '...' if e.requirements and e.requirements|length > 60 else e.requirements or '—' }}</td>
+            <td style="color:var(--gray); font-size:0.78rem; white-space:nowrap;">{{ e.timestamp }}</td>
+            <td>
+              <div class="action-btns">
+                {% if not e.is_read %}
+                <button class="btn-sm mark" onclick="markRead({{ e.id }})"><i class="fas fa-check"></i> Mark Read</button>
+                {% endif %}
+                <button class="btn-sm del" onclick="deleteEnquiry({{ e.id }})"><i class="fas fa-trash"></i></button>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <i class="fas fa-inbox"></i>
+      <h3>No Enquiries Yet</h3>
+      <p>Customer enquiries will appear here once they submit the form on the website.</p>
+    </div>
+    {% endif %}
+  </div>
+</main>
+
+<script>
+  // Date display
+  document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-IN', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+
+  // Mark as read
+  async function markRead(id) {
+    const res = await fetch('/admin/mark-read/' + id, { method:'POST' });
+    const data = await res.json();
+    if (data.success) {
+      const row = document.getElementById('row-' + id);
+      row.classList.remove('unread');
+      const badge = row.querySelector('.badge');
+      badge.className = 'badge badge-read';
+      badge.innerHTML = '<i class="fas fa-check"></i> Read';
+      const markBtn = row.querySelector('.btn-sm.mark');
+      if (markBtn) markBtn.remove();
+      // Update unread count
+      const unreadEl = document.querySelectorAll('.stat-card-num')[1];
+      unreadEl.textContent = Math.max(0, parseInt(unreadEl.textContent) - 1);
+      const readEl = document.querySelectorAll('.stat-card-num')[2];
+      readEl.textContent = parseInt(readEl.textContent) + 1;
+    }
+  }
+
+  // Delete enquiry
+  async function deleteEnquiry(id) {
+    if (!confirm('Are you sure you want to delete this enquiry?')) return;
+    const res = await fetch('/admin/delete/' + id, { method:'POST' });
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById('row-' + id).remove();
+      const totalEl = document.querySelectorAll('.stat-card-num')[0];
+      totalEl.textContent = Math.max(0, parseInt(totalEl.textContent) - 1);
+    }
+  }
+
+  // Search filter
+  function filterTable() {
+    const query = document.getElementById('searchInput').value.toLowerCase();
+    document.querySelectorAll('#enquiryTable tbody tr').forEach(row => {
+      row.style.display = row.textContent.toLowerCase().includes(query) ? '' : 'none';
+    });
+  }
+</script>
+</body>
+</html>

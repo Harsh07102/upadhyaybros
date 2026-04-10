@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manage Products | UBC Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root{--navy:#0a1628;--navy-mid:#132040;--gold:#c9a84c;--gold-light:#e8c96d;--white:#fff;--off-white:#f8f6f0;--gray:#6b7280;--light-gray:#e5e7eb;--red:#dc2626;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Outfit',sans-serif;background:var(--off-white);display:flex;min-height:100vh;}
+    .sidebar{width:260px;min-height:100vh;background:var(--navy);border-right:1px solid rgba(201,168,76,0.15);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;}
+    .sidebar-brand{padding:1.5rem;border-bottom:1px solid rgba(201,168,76,0.15);display:flex;align-items:center;gap:12px;}
+    .sidebar-brand img{width:44px;height:44px;border-radius:50%;border:2px solid var(--gold);background:#000;object-fit:contain;}
+    .sidebar-brand h3{font-family:'Playfair Display',serif;color:var(--white);font-size:0.95rem;}
+    .sidebar-brand p{color:var(--gold);font-size:0.68rem;letter-spacing:1.5px;}
+    .sidebar-nav{flex:1;padding:1rem 0;}
+    .nav-item{display:flex;align-items:center;gap:12px;padding:11px 1.5rem;color:rgba(255,255,255,0.65);text-decoration:none;font-size:0.88rem;font-weight:500;transition:all 0.2s;border-left:3px solid transparent;}
+    .nav-item:hover,.nav-item.active{color:var(--gold);background:rgba(201,168,76,0.07);border-left-color:var(--gold);}
+    .nav-item i{width:18px;text-align:center;}
+    .sidebar-footer{padding:1rem 1.5rem;border-top:1px solid rgba(255,255,255,0.05);}
+    .logout-btn{width:100%;background:rgba(220,38,38,0.1);border:1px solid rgba(220,38,38,0.2);color:#fca5a5;padding:10px;border-radius:8px;cursor:pointer;font-family:'Outfit',sans-serif;font-size:0.85rem;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;transition:all 0.2s;}
+    .logout-btn:hover{background:rgba(220,38,38,0.25);}
+    .main{margin-left:260px;flex:1;padding:2rem;}
+    .page-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:2rem;}
+    .page-top h1{font-family:'Playfair Display',serif;font-size:1.7rem;color:var(--navy);}
+    .page-top p{color:var(--gray);font-size:0.85rem;}
+    .view-btn{background:var(--gold);color:var(--navy);padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:700;font-size:0.85rem;display:inline-flex;align-items:center;gap:6px;}
+    /* Card */
+    .card{background:var(--white);border-radius:16px;border:1px solid var(--light-gray);box-shadow:0 2px 12px rgba(0,0,0,0.06);overflow:hidden;margin-bottom:2rem;}
+    .card-head{padding:1.2rem 1.5rem;border-bottom:1px solid var(--light-gray);background:linear-gradient(135deg,var(--navy),var(--navy-mid));display:flex;align-items:center;gap:10px;}
+    .card-head h3{color:var(--white);font-size:1rem;font-weight:700;}
+    .card-head i{color:var(--gold);}
+    .card-body{padding:1.8rem;}
+    /* Form */
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;}
+    .fg{display:flex;flex-direction:column;gap:6px;}
+    .fg.full{grid-column:1/-1;}
+    .fg label{font-size:0.82rem;font-weight:600;color:var(--navy);}
+    .fg label small{font-weight:400;color:var(--gray);margin-left:4px;}
+    .fg input,.fg textarea,.fg select{padding:10px 14px;border:1.5px solid var(--light-gray);border-radius:8px;font-family:'Outfit',sans-serif;font-size:0.88rem;color:var(--navy);outline:none;transition:all 0.2s;background:var(--white);}
+    .fg input:focus,.fg textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,0.1);}
+    .fg textarea{resize:vertical;}
+    /* Multi-image drop zone */
+    .img-drop-zone{border:2px dashed var(--light-gray);border-radius:12px;padding:2rem;text-align:center;cursor:pointer;transition:all 0.25s;position:relative;background:#fafafa;}
+    .img-drop-zone:hover,.img-drop-zone.over{border-color:var(--gold);background:rgba(201,168,76,0.03);}
+    .img-drop-zone .dz-icon{font-size:2.5rem;color:var(--gold);margin-bottom:0.6rem;}
+    .img-drop-zone p{font-size:0.85rem;color:var(--gray);}
+    .img-drop-zone small{font-size:0.75rem;color:#aaa;}
+    .img-drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;}
+    /* Preview thumbnails */
+    .img-previews{display:flex;flex-wrap:wrap;gap:10px;margin-top:1rem;}
+    .img-preview-item{position:relative;width:90px;height:90px;border-radius:8px;overflow:hidden;border:2px solid var(--light-gray);}
+    .img-preview-item img{width:100%;height:100%;object-fit:cover;}
+    .img-preview-item .remove-img{position:absolute;top:3px;right:3px;background:rgba(220,38,38,0.85);border:none;color:white;width:20px;height:20px;border-radius:50%;cursor:pointer;font-size:0.6rem;display:flex;align-items:center;justify-content:center;}
+    .img-count-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(201,168,76,0.12);color:#92600a;padding:4px 10px;border-radius:50px;font-size:0.75rem;font-weight:600;margin-top:0.5rem;}
+    /* Specs hint */
+    .specs-hint{background:rgba(10,22,40,0.04);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:10px 14px;font-size:0.78rem;color:var(--gray);margin-top:6px;line-height:1.6;}
+    /* Button */
+    .btn-add{background:var(--navy);color:var(--gold);padding:12px 28px;border-radius:8px;border:none;font-weight:700;font-size:0.9rem;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:7px;font-family:'Outfit',sans-serif;margin-top:1.2rem;}
+    .btn-add:hover{background:var(--gold);color:var(--navy);}
+    .btn-add:disabled{opacity:0.6;cursor:not-allowed;}
+    /* Products list */
+    .products-list{display:flex;flex-direction:column;gap:1.2rem;}
+    .prod-admin-card{background:var(--white);border-radius:14px;border:1px solid var(--light-gray);display:grid;grid-template-columns:auto 1fr auto;gap:0;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.05);transition:all 0.2s;}
+    .prod-admin-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.1);}
+    .pac-imgs{width:160px;display:flex;gap:3px;overflow:hidden;flex-shrink:0;}
+    .pac-imgs img{width:100%;height:140px;object-fit:cover;}
+    .pac-imgs.multi{flex-direction:column;}
+    .pac-imgs.multi img{height:70px;}
+    .pac-no-img{width:160px;height:140px;background:linear-gradient(135deg,var(--navy),var(--navy-mid));display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .pac-body{padding:1.2rem 1.5rem;display:flex;flex-direction:column;justify-content:center;}
+    .pac-name{font-weight:700;color:var(--navy);font-size:1rem;margin-bottom:3px;}
+    .pac-badge{font-size:0.7rem;background:rgba(201,168,76,0.12);color:#92600a;padding:2px 8px;border-radius:50px;display:inline-block;margin-bottom:6px;font-weight:600;}
+    .pac-desc{font-size:0.82rem;color:var(--gray);line-height:1.5;margin-bottom:6px;}
+    .pac-img-count{font-size:0.75rem;color:var(--gray);display:flex;align-items:center;gap:5px;}
+    .pac-img-count i{color:var(--gold);}
+    .pac-actions{padding:1.2rem;display:flex;align-items:center;border-left:1px solid var(--light-gray);}
+    .btn-edit{background:rgba(201,168,76,0.1);color:#92600a;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:0.8rem;font-weight:600;transition:all 0.2s;font-family:'Outfit',sans-serif;display:flex;align-items:center;gap:5px;margin-bottom:6px;}
+    .btn-edit:hover{background:var(--gold);color:var(--navy);}
+    .pac-actions{padding:1.2rem;display:flex;flex-direction:column;align-items:stretch;border-left:1px solid var(--light-gray);min-width:100px;}
+    /* Edit Modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:1000;display:none;align-items:center;justify-content:center;padding:1rem;}
+    .modal-backdrop.open{display:flex;}
+    .modal-box{background:var(--white);border-radius:18px;width:100%;max-width:660px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,0.35);}
+    .modal-head{padding:1.3rem 1.5rem;border-bottom:1px solid var(--light-gray);background:linear-gradient(135deg,var(--navy),var(--navy-mid));display:flex;align-items:center;justify-content:space-between;border-radius:18px 18px 0 0;}
+    .modal-head h3{color:var(--white);font-size:1rem;font-weight:700;display:flex;align-items:center;gap:8px;}
+    .modal-head h3 i{color:var(--gold);}
+    .modal-close{background:rgba(255,255,255,0.1);border:none;color:rgba(255,255,255,0.7);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:0.9rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+    .modal-close:hover{background:rgba(220,38,38,0.3);color:white;}
+    .modal-body{padding:1.5rem;}
+    .modal-footer{padding:1rem 1.5rem;border-top:1px solid var(--light-gray);display:flex;gap:0.8rem;justify-content:flex-end;}
+    .btn-save{background:var(--navy);color:var(--gold);padding:10px 24px;border-radius:8px;border:none;font-weight:700;font-size:0.88rem;cursor:pointer;transition:all 0.2s;font-family:'Outfit',sans-serif;display:inline-flex;align-items:center;gap:6px;}
+    .btn-save:hover{background:var(--gold);color:var(--navy);}
+    .btn-cancel{background:var(--off-white);color:var(--gray);padding:10px 20px;border-radius:8px;border:1px solid var(--light-gray);font-weight:600;font-size:0.88rem;cursor:pointer;font-family:'Outfit',sans-serif;}
+    .existing-imgs{display:flex;flex-wrap:wrap;gap:8px;margin-top:0.8rem;}
+    .eimg-item{position:relative;width:80px;height:80px;border-radius:8px;overflow:hidden;border:2px solid var(--light-gray);}
+    .eimg-item img{width:100%;height:100%;object-fit:cover;}
+    .eimg-del{position:absolute;top:3px;right:3px;background:rgba(220,38,38,0.85);border:none;color:white;width:20px;height:20px;border-radius:50%;cursor:pointer;font-size:0.6rem;display:flex;align-items:center;justify-content:center;}
+    .save-alert{padding:9px 13px;border-radius:7px;font-size:0.82rem;margin-bottom:0.8rem;display:none;}
+    .save-alert.ok{background:#d1fae5;color:#065f46;}
+    .save-alert.err{background:#fee2e2;color:#991b1b;}
+    .alert{padding:11px 15px;border-radius:8px;font-size:0.85rem;margin-bottom:1rem;display:none;}
+    .alert.ok{background:#d1fae5;color:#065f46;}
+    .alert.err{background:#fee2e2;color:#991b1b;}
+    .empty{text-align:center;padding:3rem;color:var(--gray);}
+    .empty i{font-size:3rem;color:var(--light-gray);display:block;margin-bottom:1rem;}
+    .section-count{font-size:0.8rem;color:var(--gray);font-family:'Outfit',sans-serif;font-weight:400;margin-left:8px;}
+    .info-tip{background:rgba(59,130,246,0.07);border:1px solid rgba(59,130,246,0.2);border-radius:10px;padding:1rem 1.2rem;font-size:0.82rem;color:#1d4ed8;display:flex;gap:10px;align-items:flex-start;margin-bottom:1.5rem;}
+    .info-tip i{margin-top:2px;flex-shrink:0;}
+  </style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <img src="/static/images/logo.png" alt="UBC"/>
+    <div><h3>UBC Admin</h3><p>MANAGEMENT PORTAL</p></div>
+  </div>
+  <nav class="sidebar-nav">
+    <a class="nav-item" href="/admin/dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+    <a class="nav-item" href="/admin/dashboard"><i class="fas fa-envelope-open-text"></i> Enquiries</a>
+    <a class="nav-item" href="/admin/applications"><i class="fas fa-user-tie"></i> Job Applications</a>
+    <a class="nav-item active" href="/admin/products"><i class="fas fa-bolt"></i> Products</a>
+    <a class="nav-item" href="/admin/past-work"><i class="fas fa-images"></i> Past Work</a>
+    <a class="nav-item" href="/admin/certificates"><i class="fas fa-certificate"></i> Certificates</a>
+    <a class="nav-item" href="/products" target="_blank"><i class="fas fa-eye"></i> View Products Page</a>
+    <a class="nav-item" href="/"><i class="fas fa-globe"></i> View Website</a>
+  </nav>
+  <div class="sidebar-footer">
+    <a href="/admin/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="page-top">
+    <div>
+      <h1>⚡ Manage Products</h1>
+      <p>Add new products with images and descriptions — no coding needed</p>
+    </div>
+    <a href="/products" target="_blank" class="view-btn"><i class="fas fa-external-link-alt"></i> View Products Page</a>
+  </div>
+
+  <div class="info-tip">
+    <i class="fas fa-info-circle"></i>
+    <div>
+      <strong>How it works:</strong> Products you add here will automatically appear on the public Products page.
+      If you upload <strong>more than 1 image</strong>, they will show as an <strong>auto-sliding image slider</strong>.
+      If you upload just <strong>1 image</strong>, it shows as a single photo. The fixed products (MCC, APFC, etc.) always stay at the top.
+    </div>
+  </div>
+
+  <!-- Add Product Form -->
+  <div class="card">
+    <div class="card-head"><i class="fas fa-plus-circle"></i><h3>Add New Product</h3></div>
+    <div class="card-body">
+      <div id="prodAlert" class="alert"></div>
+      <form id="addProdForm" enctype="multipart/form-data">
+        <div class="form-grid">
+          <div class="fg">
+            <label><i class="fas fa-tag"></i> Product Name *</label>
+            <input type="text" name="name" placeholder="e.g. VFD Control Panel" required/>
+          </div>
+          <div class="fg">
+            <label><i class="fas fa-bookmark"></i> Badge / Short Label</label>
+            <input type="text" name="badge" placeholder="e.g. VFD Panel  (shows as small tag)"/>
+          </div>
+          <div class="fg full">
+            <label><i class="fas fa-align-left"></i> Description *</label>
+            <textarea name="description" rows="4" placeholder="Describe the product — what it does, who it's for, key benefits..." required></textarea>
+          </div>
+          <div class="fg full">
+            <label>
+              <i class="fas fa-list-ul"></i> Specifications
+              <small>(optional)</small>
+            </label>
+            <textarea name="specs" rows="6" id="specsField" placeholder="Type each spec on a new line like:&#10;Voltage: 415V, 3-Phase&#10;Rating: 10A to 630A&#10;Enclosure: IP54 Sheet Metal&#10;Standards: IS/IEC 61439"></textarea>
+            <div class="specs-hint">
+              <strong>📋 Format:</strong> Write each specification on a new line as <code>Label: Value</code><br>
+              Example:<br>
+              <code>Voltage: 415V, 3-Phase, 50Hz</code><br>
+              <code>Rating: 10A to 630A</code><br>
+              <code>Enclosure: IP54 Powder Coated</code>
+            </div>
+          </div>
+          <div class="fg full">
+            <label><i class="fas fa-images"></i> Product Images <small>(upload 1 or more — multiple = auto slider)</small></label>
+            <div class="img-drop-zone" id="imgDropZone">
+              <input type="file" name="images" id="imgInput" accept="image/*" multiple onchange="handleImageSelect(this)"/>
+              <div class="dz-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+              <p>Click to upload images or drag & drop here</p>
+              <small>JPG, PNG, WEBP — Select multiple images for a slider</small>
+            </div>
+            <div class="img-previews" id="imgPreviews"></div>
+            <div id="imgCountBadge" style="display:none;" class="img-count-badge">
+              <i class="fas fa-images"></i> <span id="imgCountText"></span>
+            </div>
+          </div>
+        </div>
+        <button type="submit" class="btn-add" id="submitBtn">
+          <i class="fas fa-plus"></i> Add Product to Website
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Products List -->
+  <h2 style="font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--navy);margin-bottom:1.2rem;">
+    <i class="fas fa-bolt" style="color:var(--gold);margin-right:8px;"></i> Added Products
+    <span class="section-count">({{ prods|length }} total)</span>
+  </h2>
+
+  {% if prods %}
+  <div class="products-list">
+    {% for prod in prods %}
+    {% set images = prod_images[prod.id] %}
+    <div class="prod-admin-card" id="dprod-{{ prod.id }}">
+      <!-- Image preview -->
+      {% if images %}
+        <div class="pac-imgs {% if images|length > 1 %}multi{% endif %}">
+          {% for img in images[:2] %}
+          <img src="/static/{{ img.image_path }}" alt="{{ prod.name }}"/>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="pac-no-img"><i class="fas fa-bolt" style="font-size:2rem;color:rgba(201,168,76,0.4);"></i></div>
+      {% endif %}
+
+      <div class="pac-body">
+        <div class="pac-name">{{ prod.name }}</div>
+        {% if prod.badge %}<span class="pac-badge">{{ prod.badge }}</span>{% endif %}
+        {% if prod.description %}<div class="pac-desc">{{ prod.description[:120] }}{% if prod.description|length > 120 %}...{% endif %}</div>{% endif %}
+        <div class="pac-img-count">
+          <i class="fas fa-{% if images|length > 1 %}layer-group{% elif images|length == 1 %}image{% else %}image-slash{% endif %}"></i>
+          {% if images|length == 0 %}No images
+          {% elif images|length == 1 %}1 image (single photo)
+          {% else %}{{ images|length }} images (auto slider){% endif %}
+        </div>
+      </div>
+
+      <div class="pac-actions">
+        <button class="btn-edit" onclick="openEditProdById({{ prod.id }})">
+          <i class="fas fa-edit"></i> Edit
+        </button>
+        <button class="btn-del" onclick="delProduct({{ prod.id }})">
+          <i class="fas fa-trash"></i> Delete
+        </button>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty">
+    <i class="fas fa-bolt"></i>
+    <h3 style="color:var(--navy);margin-bottom:0.5rem;">No Products Added Yet</h3>
+    <p>Use the form above to add your first product. It will appear live on the website instantly.</p>
+  </div>
+  {% endif %}
+</main>
+
+<!-- Product data store — safe JSON, no HTML attribute issues -->
+<script>
+const PROD_DATA = {
+  {% for prod in prods %}
+  {{ prod.id }}: {
+    name: {{ prod.name|tojson }},
+    badge: {{ prod.badge|tojson }},
+    desc: {{ prod.description|tojson }},
+    specs: {{ prod.specs|tojson }},
+    imgIds: {{ prod_images[prod.id]|map(attribute='id')|list|tojson }},
+    imgPaths: {{ prod_images[prod.id]|map(attribute='image_path')|list|tojson }}
+  }{% if not loop.last %},{% endif %}
+  {% endfor %}
+};
+</script>
+
+<script>
+  let selectedFiles = [];
+
+  function handleImageSelect(input) {
+    const newFiles = Array.from(input.files);
+    selectedFiles = [...selectedFiles, ...newFiles];
+    renderPreviews();
+    updateCount();
+  }
+
+  function renderPreviews() {
+    const container = document.getElementById('imgPreviews');
+    container.innerHTML = '';
+    selectedFiles.forEach((file, idx) => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const wrap = document.createElement('div');
+        wrap.className = 'img-preview-item';
+        wrap.innerHTML = `<img src="${e.target.result}" alt=""/><button type="button" class="remove-img" onclick="removeImg(${idx})"><i class="fas fa-times"></i></button>`;
+        container.appendChild(wrap);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function removeImg(idx) {
+    selectedFiles.splice(idx, 1);
+    renderPreviews();
+    updateCount();
+  }
+
+  function updateCount() {
+    const badge = document.getElementById('imgCountBadge');
+    const text  = document.getElementById('imgCountText');
+    if (selectedFiles.length === 0) {
+      badge.style.display = 'none';
+    } else {
+      badge.style.display = 'inline-flex';
+      if (selectedFiles.length === 1)
+        text.textContent = '1 image selected — will show as single photo';
+      else
+        text.textContent = selectedFiles.length + ' images selected — will show as auto slider';
+    }
+  }
+
+  // Drag-and-drop highlight
+  const dz = document.getElementById('imgDropZone');
+  dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('over'); });
+  dz.addEventListener('dragleave', () => dz.classList.remove('over'));
+  dz.addEventListener('drop', e => {
+    e.preventDefault(); dz.classList.remove('over');
+    const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+    selectedFiles = [...selectedFiles, ...files];
+    renderPreviews(); updateCount();
+  });
+
+  // Submit
+  document.getElementById('addProdForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    const alert = document.getElementById('prodAlert');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+    btn.disabled = true;
+
+    const fd = new FormData(this);
+    // Remove default file input and re-add our curated files
+    fd.delete('images');
+    selectedFiles.forEach(f => fd.append('images', f));
+
+    try {
+      const res = await fetch('/admin/products/add', { method: 'POST', body: fd });
+      const d = await res.json();
+      if (d.success) {
+        alert.className = 'alert ok'; alert.textContent = '✅ Product added successfully! Refreshing...'; alert.style.display = 'block';
+        setTimeout(() => location.reload(), 1300);
+      } else {
+        alert.className = 'alert err'; alert.textContent = '❌ ' + (d.message || 'Error adding product.'); alert.style.display = 'block';
+        btn.innerHTML = '<i class="fas fa-plus"></i> Add Product to Website'; btn.disabled = false;
+      }
+    } catch {
+      alert.className = 'alert err'; alert.textContent = '❌ Network error. Please try again.'; alert.style.display = 'block';
+      btn.innerHTML = '<i class="fas fa-plus"></i> Add Product to Website'; btn.disabled = false;
+    }
+  });
+
+  async function delProduct(id) {
+    if (!confirm('Delete this product and all its images? This cannot be undone.')) return;
+    const res = await fetch('/admin/products/delete/' + id, { method: 'POST' });
+    const d = await res.json();
+    if (d.success) document.getElementById('dprod-' + id).remove();
+  }
+
+  // ── Edit Modal ────────────────────────────────────────────────────────────
+  function openEditProdById(id) {
+    const p = PROD_DATA[id];
+    if (!p) return;
+    openEditProd(id, p.name, p.badge, p.desc, p.specs, p.imgIds, p.imgPaths);
+  }
+  function openEditProd(id, name, badge, desc, specs, imgIds, imgPaths) {
+    document.getElementById('editProdId').value = id;
+    document.getElementById('editName').value = name || '';
+    document.getElementById('editBadge').value = badge || '';
+    document.getElementById('editDesc').value = desc || '';
+    document.getElementById('editSpecs').value = specs || '';
+    // Clear any previous new-image previews
+    document.getElementById('editImgPreviews').innerHTML = '';
+    document.getElementById('editImgInput').value = '';
+    const container = document.getElementById('existingImgs');
+    container.innerHTML = '';
+    if (imgIds && imgIds.length) {
+      imgIds.forEach((iid, i) => {
+        const div = document.createElement('div');
+        div.className = 'eimg-item'; div.id = 'eimg-'+iid;
+        div.innerHTML = `<img src="/static/${imgPaths[i]}"/><button class="eimg-del" onclick="deleteExistingImg(${iid})" title="Remove"><i class="fas fa-times"></i></button>`;
+        container.appendChild(div);
+      });
+    } else {
+      container.innerHTML = '<p style="font-size:0.8rem;color:var(--gray);">No images yet — add some below.</p>';
+    }
+    document.getElementById('editAlert').style.display = 'none';
+    document.getElementById('editModal').classList.add('open');
+  }
+
+  function previewEditImages(input) {
+    const container = document.getElementById('editImgPreviews');
+    container.innerHTML = '';
+    Array.from(input.files).forEach(file => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const wrap = document.createElement('div');
+        wrap.className = 'img-preview-item';
+        wrap.innerHTML = `<img src="${e.target.result}"/><span style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.5);color:#fff;font-size:0.55rem;text-align:center;padding:2px;">NEW</span>`;
+        container.appendChild(wrap);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function closeEditModal() { document.getElementById('editModal').classList.remove('open'); }
+
+  async function deleteExistingImg(iid) {
+    if (!confirm('Remove this image?')) return;
+    const res = await fetch('/admin/products/delete-image/'+iid, {method:'POST'});
+    const d = await res.json();
+    if (d.success) document.getElementById('eimg-'+iid).remove();
+  }
+
+  async function saveProduct() {
+    const id = document.getElementById('editProdId').value;
+    const alertEl = document.getElementById('editAlert');
+    const btn = document.querySelector('#editModal .btn-save');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...'; btn.disabled = true;
+    const fd = new FormData(document.getElementById('editProdForm'));
+    try {
+      const res = await fetch('/admin/products/edit/'+id, {method:'POST', body:fd});
+      const d = await res.json();
+      if (d.success) {
+        alertEl.className='save-alert ok'; alertEl.textContent='✅ Saved! Refreshing...'; alertEl.style.display='block';
+        setTimeout(() => location.reload(), 1200);
+      } else {
+        alertEl.className='save-alert err'; alertEl.textContent='❌ Error saving.'; alertEl.style.display='block';
+      }
+    } catch {
+      alertEl.className='save-alert err'; alertEl.textContent='❌ Network error.'; alertEl.style.display='block';
+    }
+    btn.innerHTML='<i class="fas fa-save"></i> Save Changes'; btn.disabled=false;
+  }
+
+  document.addEventListener('click', function(e) {
+    if (e.target && e.target.id === 'editModal') closeEditModal();
+  });
+</script>
+
+<!-- ═══ EDIT PRODUCT MODAL ═══ -->
+<div class="modal-backdrop" id="editModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3><i class="fas fa-edit"></i> Edit Product</h3>
+      <button class="modal-close" onclick="closeEditModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="save-alert" id="editAlert"></div>
+      <form id="editProdForm" enctype="multipart/form-data">
+        <input type="hidden" id="editProdId" name="_ignored"/>
+        <div class="form-grid">
+          <div class="fg"><label>Product Name *</label><input type="text" id="editName" name="name" required/></div>
+          <div class="fg"><label>Badge / Short Label</label><input type="text" id="editBadge" name="badge"/></div>
+          <div class="fg full"><label>Description</label><textarea id="editDesc" name="description" rows="4"></textarea></div>
+          <div class="fg full"><label>Specifications <small>(Label: Value per line)</small></label><textarea id="editSpecs" name="specs" rows="5"></textarea></div>
+          <div class="fg full"><label>Current Images <small>(click ✕ to remove)</small></label><div class="existing-imgs" id="existingImgs"></div></div>
+          <div class="fg full">
+            <label>Add More Images <small>(optional — these will be added to existing images)</small></label>
+            <div class="img-drop-zone" style="padding:1.2rem;" id="editDropZone">
+              <input type="file" name="images" id="editImgInput" accept="image/*" multiple onchange="previewEditImages(this)"/>
+              <div class="dz-icon" style="font-size:1.8rem;"><i class="fas fa-cloud-upload-alt"></i></div>
+              <p style="font-size:0.8rem;">Click to add more images — select multiple for slider</p>
+            </div>
+            <div class="img-previews" id="editImgPreviews" style="margin-top:0.6rem;"></div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+      <button class="btn-save" onclick="saveProduct()"><i class="fas fa-save"></i> Save Changes</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>

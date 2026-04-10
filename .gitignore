@@ -1,0 +1,19 @@
+# Secrets — NEVER commit these
+.env
+
+# Database (contains real user data)
+ubc.db
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Uploaded files
+static/images/uploads/*
+!static/images/uploads/.gitkeep
+
+# OS files
+.DS_Store
+Thumbs.db
+README.md

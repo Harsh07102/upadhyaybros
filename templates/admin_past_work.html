@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manage Past Work | UBC Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root{--navy:#0a1628;--navy-mid:#132040;--gold:#c9a84c;--gold-light:#e8c96d;--white:#fff;--off-white:#f8f6f0;--gray:#6b7280;--light-gray:#e5e7eb;--red:#dc2626;--green:#16a34a;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Outfit',sans-serif;background:var(--off-white);display:flex;min-height:100vh;}
+    /* Sidebar */
+    .sidebar{width:260px;min-height:100vh;background:var(--navy);border-right:1px solid rgba(201,168,76,0.15);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;}
+    .sidebar-brand{padding:1.5rem;border-bottom:1px solid rgba(201,168,76,0.15);display:flex;align-items:center;gap:12px;}
+    .sidebar-brand img{width:44px;height:44px;border-radius:50%;border:2px solid var(--gold);background:#000;object-fit:contain;}
+    .sidebar-brand h3{font-family:'Playfair Display',serif;color:var(--white);font-size:0.95rem;}
+    .sidebar-brand p{color:var(--gold);font-size:0.68rem;letter-spacing:1.5px;}
+    .sidebar-nav{flex:1;padding:1rem 0;}
+    .nav-item{display:flex;align-items:center;gap:12px;padding:11px 1.5rem;color:rgba(255,255,255,0.65);text-decoration:none;font-size:0.88rem;font-weight:500;transition:all 0.2s;border-left:3px solid transparent;}
+    .nav-item:hover,.nav-item.active{color:var(--gold);background:rgba(201,168,76,0.07);border-left-color:var(--gold);}
+    .nav-item i{width:18px;text-align:center;}
+    .sidebar-footer{padding:1rem 1.5rem;border-top:1px solid rgba(255,255,255,0.05);}
+    .logout-btn{width:100%;background:rgba(220,38,38,0.1);border:1px solid rgba(220,38,38,0.2);color:#fca5a5;padding:10px;border-radius:8px;cursor:pointer;font-family:'Outfit',sans-serif;font-size:0.85rem;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s;text-decoration:none;}
+    .logout-btn:hover{background:rgba(220,38,38,0.25);}
+    /* Main */
+    .main{margin-left:260px;flex:1;padding:2rem;}
+    .page-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:2rem;}
+    .page-top h1{font-family:'Playfair Display',serif;font-size:1.7rem;color:var(--navy);}
+    .page-top p{color:var(--gray);font-size:0.85rem;}
+    /* Tabs */
+    .tabs{display:flex;gap:0;background:var(--white);border:1px solid var(--light-gray);border-radius:12px;overflow:hidden;margin-bottom:2rem;width:fit-content;}
+    .tab-btn{padding:11px 28px;border:none;background:transparent;font-family:'Outfit',sans-serif;font-size:0.88rem;font-weight:600;cursor:pointer;color:var(--gray);display:flex;align-items:center;gap:7px;transition:all 0.2s;border-right:1px solid var(--light-gray);}
+    .tab-btn:last-child{border-right:none;}
+    .tab-btn.active{background:var(--navy);color:var(--gold);}
+    .tab-panel{display:none;}
+    .tab-panel.active{display:block;}
+    /* Card */
+    .card{background:var(--white);border-radius:16px;border:1px solid var(--light-gray);box-shadow:0 2px 12px rgba(0,0,0,0.06);overflow:hidden;margin-bottom:2rem;}
+    .card-head{padding:1.2rem 1.5rem;border-bottom:1px solid var(--light-gray);background:linear-gradient(135deg,var(--navy),var(--navy-mid));display:flex;align-items:center;gap:10px;}
+    .card-head h3{color:var(--white);font-size:1rem;font-weight:700;}
+    .card-head i{color:var(--gold);}
+    .card-body{padding:1.8rem;}
+    /* Form */
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;}
+    .fg{display:flex;flex-direction:column;gap:6px;}
+    .fg.full{grid-column:1/-1;}
+    .fg label{font-size:0.82rem;font-weight:600;color:var(--navy);}
+    .fg input,.fg textarea,.fg select{padding:10px 14px;border:1.5px solid var(--light-gray);border-radius:8px;font-family:'Outfit',sans-serif;font-size:0.88rem;color:var(--navy);outline:none;transition:all 0.2s;background:var(--white);}
+    .fg input:focus,.fg textarea:focus,.fg select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,0.1);}
+    .fg textarea{resize:vertical;min-height:80px;}
+    /* Drop zone */
+    .drop-zone{border:2px dashed var(--light-gray);border-radius:10px;padding:1.8rem;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;background:#fafafa;}
+    .drop-zone:hover,.drop-zone.over{border-color:var(--gold);background:rgba(201,168,76,0.03);}
+    .drop-zone i{font-size:2rem;color:var(--gold);margin-bottom:0.5rem;display:block;}
+    .drop-zone p{font-size:0.82rem;color:var(--gray);}
+    .drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;}
+    .preview-img{max-height:100px;border-radius:8px;margin-top:0.8rem;display:none;}
+    /* Buttons */
+    .btn-add{background:var(--navy);color:var(--gold);padding:11px 26px;border-radius:8px;border:none;font-weight:700;font-size:0.88rem;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:7px;font-family:'Outfit',sans-serif;margin-top:1rem;}
+    .btn-add:hover{background:var(--gold);color:var(--navy);}
+    /* Grids */
+    .projects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1.2rem;}
+    .proj-card{background:var(--white);border-radius:12px;border:1px solid var(--light-gray);overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.05);transition:all 0.2s;}
+    .proj-card:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,0,0,0.1);}
+    .proj-img{width:100%;height:150px;object-fit:cover;background:#f0f0f0;display:flex;align-items:center;justify-content:center;}
+    .proj-img img{width:100%;height:100%;object-fit:cover;}
+    .proj-no-img{width:100%;height:150px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--navy),var(--navy-mid));}
+    .proj-body{padding:1rem;}
+    .proj-title{font-weight:700;color:var(--navy);font-size:0.9rem;margin-bottom:3px;}
+    .proj-client{font-size:0.75rem;color:var(--gold);font-weight:600;margin-bottom:4px;}
+    .proj-industry{font-size:0.7rem;background:rgba(10,22,40,0.07);color:var(--navy);padding:2px 8px;border-radius:50px;display:inline-block;margin-bottom:6px;}
+    .proj-desc{font-size:0.78rem;color:var(--gray);line-height:1.5;margin-bottom:8px;}
+    .proj-footer{display:flex;justify-content:flex-end;}
+    .btn-del{background:rgba(220,38,38,0.1);color:var(--red);border:none;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:0.75rem;font-weight:600;transition:all 0.2s;font-family:'Outfit',sans-serif;display:inline-flex;align-items:center;gap:4px;}
+    .btn-del:hover{background:var(--red);color:white;}
+    .btn-edit{background:rgba(201,168,76,0.12);color:#92600a;border:none;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:0.75rem;font-weight:600;transition:all 0.2s;font-family:'Outfit',sans-serif;display:inline-flex;align-items:center;gap:4px;}
+    .btn-edit:hover{background:var(--gold);color:var(--navy);}
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:1000;display:none;align-items:center;justify-content:center;padding:1rem;}
+    .modal-backdrop.open{display:flex;}
+    .modal-box{background:var(--white);border-radius:18px;width:100%;max-width:580px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,0.3);}
+    .modal-head{padding:1.2rem 1.5rem;background:linear-gradient(135deg,var(--navy),var(--navy-mid));display:flex;align-items:center;justify-content:space-between;border-radius:18px 18px 0 0;}
+    .modal-head h3{color:var(--white);font-size:1rem;font-weight:700;display:flex;align-items:center;gap:8px;}
+    .modal-head h3 i{color:var(--gold);}
+    .modal-close-btn{background:rgba(255,255,255,0.1);border:none;color:rgba(255,255,255,0.7);width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:0.85rem;display:flex;align-items:center;justify-content:center;}
+    .modal-close-btn:hover{background:rgba(220,38,38,0.4);color:white;}
+    .modal-body{padding:1.5rem;}
+    .modal-foot{padding:1rem 1.5rem;border-top:1px solid var(--light-gray);display:flex;gap:0.8rem;justify-content:flex-end;}
+    .btn-save{background:var(--navy);color:var(--gold);padding:10px 22px;border-radius:8px;border:none;font-weight:700;font-size:0.88rem;cursor:pointer;font-family:'Outfit',sans-serif;display:inline-flex;align-items:center;gap:6px;transition:all 0.2s;}
+    .btn-save:hover{background:var(--gold);color:var(--navy);}
+    .btn-cancel{background:var(--off-white);color:var(--gray);padding:10px 18px;border-radius:8px;border:1px solid var(--light-gray);font-weight:600;font-size:0.88rem;cursor:pointer;font-family:'Outfit',sans-serif;}
+    .save-note{padding:9px 13px;border-radius:7px;font-size:0.82rem;margin-bottom:0.8rem;display:none;}
+    .save-note.ok{background:#d1fae5;color:#065f46;}
+    .save-note.err{background:#fee2e2;color:#991b1b;}
+    .proj-footer{display:flex;justify-content:flex-end;gap:5px;}
+    /* Clients list */
+    .clients-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;}
+    .cl-item{background:var(--white);border-radius:12px;border:1px solid var(--light-gray);padding:1.2rem 1.4rem;display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;box-shadow:0 2px 6px rgba(0,0,0,0.04);}
+    .cl-info h4{font-size:0.92rem;font-weight:700;color:var(--navy);margin-bottom:3px;}
+    .cl-tag{font-size:0.7rem;background:rgba(201,168,76,0.12);color:#92600a;padding:2px 8px;border-radius:50px;display:inline-block;margin-bottom:5px;}
+    .cl-info p{font-size:0.78rem;color:var(--gray);line-height:1.5;}
+    .cl-info .cl-loc{font-size:0.72rem;color:var(--gray);margin-top:3px;display:flex;align-items:center;gap:4px;}
+    .cl-info .cl-loc i{color:var(--gold);}
+    /* Alert */
+    .alert{padding:11px 15px;border-radius:8px;font-size:0.85rem;margin-bottom:1rem;display:none;}
+    .alert.ok{background:#d1fae5;color:#065f46;}
+    .alert.err{background:#fee2e2;color:#991b1b;}
+    .view-btn{background:var(--gold);color:var(--navy);padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:700;font-size:0.85rem;display:inline-flex;align-items:center;gap:6px;}
+    .empty{text-align:center;padding:3rem;color:var(--gray);grid-column:1/-1;}
+    .empty i{font-size:3rem;color:var(--light-gray);display:block;margin-bottom:1rem;}
+    .section-count{font-size:0.8rem;color:var(--gray);font-family:'Outfit',sans-serif;font-weight:400;margin-left:8px;}
+  </style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <img src="/static/images/logo.png" alt="UBC"/>
+    <div><h3>UBC Admin</h3><p>MANAGEMENT PORTAL</p></div>
+  </div>
+  <nav class="sidebar-nav">
+    <a class="nav-item" href="/admin/dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+    <a class="nav-item" href="/admin/dashboard"><i class="fas fa-envelope-open-text"></i> Enquiries</a>
+    <a class="nav-item" href="/admin/applications"><i class="fas fa-user-tie"></i> Job Applications</a>
+    <a class="nav-item active" href="/admin/past-work"><i class="fas fa-images"></i> Past Work</a>
+    <a class="nav-item" href="/admin/certificates"><i class="fas fa-certificate"></i> Certificates</a>
+    <a class="nav-item" href="/past-work" target="_blank"><i class="fas fa-eye"></i> View Public Page</a>
+    <a class="nav-item" href="/"><i class="fas fa-globe"></i> View Website</a>
+  </nav>
+  <div class="sidebar-footer">
+    <a href="/admin/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="page-top">
+    <div>
+      <h1>🏗️ Past Work & Clients</h1>
+      <p>Add project photos and client names — no coding needed</p>
+    </div>
+    <a href="/past-work" target="_blank" class="view-btn"><i class="fas fa-external-link-alt"></i> View Public Page</a>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('projects',this)"><i class="fas fa-images"></i> Projects Gallery</button>
+    <button class="tab-btn" onclick="switchTab('clients',this)"><i class="fas fa-building"></i> Clients</button>
+  </div>
+
+  <!-- ═══ PROJECTS TAB ═══ -->
+  <div class="tab-panel active" id="tab-projects">
+
+    <!-- Add Project Form -->
+    <div class="card">
+      <div class="card-head"><i class="fas fa-plus-circle"></i><h3>Add New Project</h3></div>
+      <div class="card-body">
+        <div id="projAlert" class="alert"></div>
+        <form id="addProjForm" enctype="multipart/form-data">
+          <div class="form-grid">
+            <div class="fg">
+              <label><i class="fas fa-heading"></i> Project Title *</label>
+              <input type="text" name="title" placeholder="e.g. MCC Panel for Textile Factory" required/>
+            </div>
+            <div class="fg">
+              <label><i class="fas fa-building"></i> Client Name</label>
+              <input type="text" name="client_name" placeholder="e.g. Rampur Textile Mills"/>
+            </div>
+            <div class="fg">
+              <label><i class="fas fa-industry"></i> Industry</label>
+              <select name="industry">
+                <option value="">-- Select Industry --</option>
+                <option>Manufacturing</option>
+                <option>Commercial</option>
+                <option>Healthcare</option>
+                <option>Agriculture</option>
+                <option>Construction</option>
+                <option>Education</option>
+                <option>Water Treatment</option>
+                <option>Power Utilities</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label><i class="fas fa-image"></i> Project Photo</label>
+              <div class="drop-zone" id="projDrop">
+                <input type="file" name="image" accept="image/*" onchange="previewProj(this)"/>
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>Click to upload or drag & drop<br><small>JPG, PNG supported</small></p>
+                <img id="projPreview" class="preview-img"/>
+              </div>
+            </div>
+            <div class="fg full">
+              <label><i class="fas fa-align-left"></i> Description</label>
+              <textarea name="description" placeholder="Describe the work done — panel type, capacity, client requirements, etc."></textarea>
+            </div>
+          </div>
+          <button type="submit" class="btn-add"><i class="fas fa-plus"></i> Add Project</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Projects List -->
+    <h2 style="font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--navy);margin-bottom:1.2rem;">
+      <i class="fas fa-images" style="color:var(--gold);margin-right:8px;"></i>All Projects
+      <span class="section-count">({{ projects|length }} total)</span>
+    </h2>
+    <div class="projects-grid" id="projGrid">
+      {% if projects %}
+        {% for p in projects %}
+        <div class="proj-card" id="proj-{{ p.id }}">
+          {% if p.image_path %}
+            <div class="proj-img"><img src="/static/{{ p.image_path }}" alt="{{ p.title }}"/></div>
+          {% else %}
+            <div class="proj-no-img"><i class="fas fa-bolt" style="font-size:2.5rem;color:var(--gold);opacity:0.5;"></i></div>
+          {% endif %}
+          <div class="proj-body">
+            <div class="proj-title">{{ p.title }}</div>
+            {% if p.client_name %}<div class="proj-client"><i class="fas fa-building"></i> {{ p.client_name }}</div>{% endif %}
+            {% if p.industry %}<span class="proj-industry">{{ p.industry }}</span>{% endif %}
+            {% if p.description %}<div class="proj-desc">{{ p.description[:100] }}{% if p.description|length > 100 %}...{% endif %}</div>{% endif %}
+            <div class="proj-footer">
+              <button class="btn-edit" onclick="openEditProjById({{ p.id }})"><i class="fas fa-edit"></i> Edit</button>
+              <button class="btn-del" onclick="delProject({{ p.id }})"><i class="fas fa-trash"></i> Delete</button>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty"><i class="fas fa-images"></i><h3 style="color:var(--navy);margin-bottom:0.5rem;">No Projects Yet</h3><p>Use the form above to add your first project.</p></div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- ═══ CLIENTS TAB ═══ -->
+  <div class="tab-panel" id="tab-clients">
+
+    <!-- Add Client Form -->
+    <div class="card">
+      <div class="card-head"><i class="fas fa-plus-circle"></i><h3>Add New Client</h3></div>
+      <div class="card-body">
+        <div id="clientAlert" class="alert"></div>
+        <div class="form-grid">
+          <div class="fg">
+            <label><i class="fas fa-building"></i> Client / Company Name *</label>
+            <input type="text" id="clName" placeholder="e.g. Rampur Sugar Mills"/>
+          </div>
+          <div class="fg">
+            <label><i class="fas fa-industry"></i> Industry</label>
+            <select id="clIndustry">
+              <option value="">-- Select Industry --</option>
+              <option>Manufacturing</option>
+              <option>Commercial</option>
+              <option>Healthcare</option>
+              <option>Agriculture</option>
+              <option>Construction</option>
+              <option>Education</option>
+              <option>Water Treatment</option>
+              <option>Power Utilities</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="fg full">
+            <label><i class="fas fa-wrench"></i> Work Done for Them</label>
+            <textarea id="clWork" rows="2" placeholder="e.g. Supplied 3 MCC Panels and 1 AMF Panel for their factory expansion"></textarea>
+          </div>
+          <div class="fg">
+            <label><i class="fas fa-map-marker-alt"></i> Location</label>
+            <input type="text" id="clLoc" placeholder="e.g. Kanpur Nagar, U.P."/>
+          </div>
+        </div>
+        <button class="btn-add" onclick="addClient()"><i class="fas fa-plus"></i> Add Client</button>
+      </div>
+    </div>
+
+    <!-- Clients List -->
+    <h2 style="font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--navy);margin-bottom:1.2rem;">
+      <i class="fas fa-building" style="color:var(--gold);margin-right:8px;"></i>All Clients
+      <span class="section-count">({{ clients|length }} total)</span>
+    </h2>
+    <div class="clients-list" id="clientList">
+      {% if clients %}
+        {% for cl in clients %}
+        <div class="cl-item" id="cl-{{ cl.id }}">
+          <div class="cl-info">
+            <h4>{{ cl.name }}</h4>
+            {% if cl.industry %}<span class="cl-tag">{{ cl.industry }}</span>{% endif %}
+            {% if cl.work_done %}<p>{{ cl.work_done }}</p>{% endif %}
+            {% if cl.location %}<p class="cl-loc"><i class="fas fa-map-marker-alt"></i> {{ cl.location }}</p>{% endif %}
+          </div>
+          <div style="display:flex;flex-direction:column;gap:5px;flex-shrink:0;">
+            <button class="btn-edit" onclick="openEditClientById({{ cl.id }})"><i class="fas fa-edit"></i></button>
+            <button class="btn-del" onclick="delClient({{ cl.id }})"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty"><i class="fas fa-building"></i><h3 style="color:var(--navy);margin-bottom:0.5rem;">No Clients Yet</h3><p>Use the form above to add your first client.</p></div>
+      {% endif %}
+    </div>
+  </div>
+
+</main>
+
+<!-- Data stores — safe JSON outside HTML attributes -->
+<script>
+const PROJ_DATA = {
+  {% for p in projects %}
+  {{ p.id }}: { title: {{ p.title|tojson }}, desc: {{ p.description|tojson }}, client: {{ (p.client_name or '')|tojson }}, industry: {{ (p.industry or '')|tojson }} }{% if not loop.last %},{% endif %}
+  {% endfor %}
+};
+const CLIENT_DATA = {
+  {% for cl in clients %}
+  {{ cl.id }}: { name: {{ cl.name|tojson }}, industry: {{ (cl.industry or '')|tojson }}, work: {{ (cl.work_done or '')|tojson }}, loc: {{ (cl.location or '')|tojson }} }{% if not loop.last %},{% endif %}
+  {% endfor %}
+};
+</script>
+
+<script>
+  // Tab switching
+  function switchTab(name, btn) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + name).classList.add('active');
+  }
+
+  // Image preview
+  function previewProj(input) {
+    const img = document.getElementById('projPreview');
+    if (input.files && input.files[0]) {
+      const r = new FileReader();
+      r.onload = e => { img.src = e.target.result; img.style.display = 'block'; };
+      r.readAsDataURL(input.files[0]);
+    }
+  }
+
+  // Drag & drop highlight
+  const dz = document.getElementById('projDrop');
+  if(dz) {
+    dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('over'); });
+    dz.addEventListener('dragleave', () => dz.classList.remove('over'));
+    dz.addEventListener('drop', () => dz.classList.remove('over'));
+  }
+
+  // Add project
+  document.getElementById('addProjForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = this.querySelector('.btn-add');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+    btn.disabled = true;
+    const fd = new FormData(this);
+    const alert = document.getElementById('projAlert');
+    try {
+      const res = await fetch('/admin/projects/add', { method: 'POST', body: fd });
+      const d = await res.json();
+      if (d.success) {
+        alert.className = 'alert ok'; alert.textContent = '✅ Project added! Refreshing...'; alert.style.display = 'block';
+        this.reset(); document.getElementById('projPreview').style.display = 'none';
+        setTimeout(() => location.reload(), 1200);
+      } else {
+        alert.className = 'alert err'; alert.textContent = '❌ Error adding project.'; alert.style.display = 'block';
+      }
+    } catch { alert.className = 'alert err'; alert.textContent = '❌ Network error.'; alert.style.display = 'block'; }
+    btn.innerHTML = '<i class="fas fa-plus"></i> Add Project'; btn.disabled = false;
+  });
+
+  // Delete project
+  async function delProject(id) {
+    if (!confirm('Delete this project? This cannot be undone.')) return;
+    const res = await fetch('/admin/projects/delete/' + id, { method: 'POST' });
+    const d = await res.json();
+    if (d.success) document.getElementById('proj-' + id).remove();
+  }
+
+  // Add client
+  async function addClient() {
+    const name = document.getElementById('clName').value.trim();
+    const alert = document.getElementById('clientAlert');
+    if (!name) { alert.className='alert err'; alert.textContent='❌ Client name is required.'; alert.style.display='block'; return; }
+    const payload = {
+      name, industry: document.getElementById('clIndustry').value,
+      work_done: document.getElementById('clWork').value.trim(),
+      location: document.getElementById('clLoc').value.trim()
+    };
+    const res = await fetch('/admin/clients/add', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    const d = await res.json();
+    if (d.success) {
+      alert.className='alert ok'; alert.textContent='✅ Client added! Refreshing...'; alert.style.display='block';
+      setTimeout(() => location.reload(), 1200);
+    }
+  }
+
+  // Delete client
+  async function delClient(id) {
+    if (!confirm('Remove this client?')) return;
+    const res = await fetch('/admin/clients/delete/' + id, { method: 'POST' });
+    const d = await res.json();
+    if (d.success) document.getElementById('cl-' + id).remove();
+  }
+
+  // ── Edit Project Modal ───────────────────────────────────────────────────
+  function openEditProjById(id) {
+    const p = PROJ_DATA[id]; if (!p) return;
+    openEditProj(id, p.title, p.desc, p.client, p.industry);
+  }
+  function openEditClientById(id) {
+    const cl = CLIENT_DATA[id]; if (!cl) return;
+    openEditClient(id, cl.name, cl.industry, cl.work, cl.loc);
+  }
+  function openEditProjBtn(btn) {
+    openEditProj(btn.dataset.id, btn.dataset.title, btn.dataset.desc, btn.dataset.client, btn.dataset.industry);
+  }
+  function openEditClientBtn(btn) {
+    openEditClient(btn.dataset.id, btn.dataset.name, btn.dataset.industry, btn.dataset.work, btn.dataset.loc);
+  }
+  function openEditProj(id, title, desc, client, industry) {
+    document.getElementById('epId').value = id;
+    document.getElementById('epTitle').value = title || '';
+    document.getElementById('epDesc').value = desc || '';
+    document.getElementById('epClient').value = client || '';
+    document.getElementById('epIndustry').value = industry || '';
+    document.getElementById('epNote').style.display = 'none';
+    document.getElementById('editProjModal').classList.add('open');
+  }
+  function closeEditProj() { document.getElementById('editProjModal').classList.remove('open'); }
+
+  async function saveProject() {
+    const id = document.getElementById('epId').value;
+    const note = document.getElementById('epNote');
+    const btn = document.querySelector('#editProjModal .btn-save');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...'; btn.disabled = true;
+    const fd = new FormData(document.getElementById('editProjForm'));
+    try {
+      const res = await fetch('/admin/projects/edit/'+id, {method:'POST', body:fd});
+      const d = await res.json();
+      if (d.success) { note.className='save-note ok'; note.textContent='✅ Saved! Refreshing...'; note.style.display='block'; setTimeout(()=>location.reload(),1200); }
+      else { note.className='save-note err'; note.textContent='❌ Error saving.'; note.style.display='block'; }
+    } catch { note.className='save-note err'; note.textContent='❌ Network error.'; note.style.display='block'; }
+    btn.innerHTML='<i class="fas fa-save"></i> Save'; btn.disabled=false;
+  }
+
+  // ── Edit Client Modal ────────────────────────────────────────────────────
+  function openEditClient(id, name, industry, work, loc) {
+    document.getElementById('ecId').value = id;
+    document.getElementById('ecName').value = name || '';
+    document.getElementById('ecIndustry').value = industry || '';
+    document.getElementById('ecWork').value = work || '';
+    document.getElementById('ecLoc').value = loc || '';
+    document.getElementById('ecNote').style.display = 'none';
+    document.getElementById('editClientModal').classList.add('open');
+  }
+  function closeEditClient() { document.getElementById('editClientModal').classList.remove('open'); }
+
+  async function saveClient() {
+    const id = document.getElementById('ecId').value;
+    const note = document.getElementById('ecNote');
+    const btn = document.querySelector('#editClientModal .btn-save');
+    btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Saving...'; btn.disabled=true;
+    try {
+      const res = await fetch('/admin/clients/edit/'+id, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          name: document.getElementById('ecName').value,
+          industry: document.getElementById('ecIndustry').value,
+          work_done: document.getElementById('ecWork').value,
+          location: document.getElementById('ecLoc').value
+        })
+      });
+      const d = await res.json();
+      if (d.success) { note.className='save-note ok'; note.textContent='✅ Saved! Refreshing...'; note.style.display='block'; setTimeout(()=>location.reload(),1200); }
+      else { note.className='save-note err'; note.textContent='❌ Error.'; note.style.display='block'; }
+    } catch { note.className='save-note err'; note.textContent='❌ Network error.'; note.style.display='block'; }
+    btn.innerHTML='<i class="fas fa-save"></i> Save'; btn.disabled=false;
+  }
+
+  // Close on backdrop click
+  ['editProjModal','editClientModal'].forEach(id => {
+    document.getElementById(id).addEventListener('click', function(e){ if(e.target===this) this.classList.remove('open'); });
+  });
+</script>
+
+<!-- ═══ EDIT PROJECT MODAL ═══ -->
+<div class="modal-backdrop" id="editProjModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3><i class="fas fa-edit"></i> Edit Project</h3>
+      <button class="modal-close-btn" onclick="closeEditProj()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="save-note" id="epNote"></div>
+      <form id="editProjForm" enctype="multipart/form-data">
+        <input type="hidden" id="epId" name="_x"/>
+        <div class="form-grid">
+          <div class="fg"><label>Project Title *</label><input type="text" id="epTitle" name="title" required/></div>
+          <div class="fg"><label>Client Name</label><input type="text" id="epClient" name="client_name"/></div>
+          <div class="fg">
+            <label>Industry</label>
+            <select id="epIndustry" name="industry">
+              <option value="">-- Select --</option>
+              <option>Manufacturing</option><option>Commercial</option><option>Healthcare</option>
+              <option>Agriculture</option><option>Construction</option><option>Education</option>
+              <option>Water Treatment</option><option>Power Utilities</option><option>Other</option>
+            </select>
+          </div>
+          <div class="fg full"><label>Description</label><textarea id="epDesc" name="description" rows="3"></textarea></div>
+          <div class="fg full">
+            <label>Replace Photo <small>(optional — leave empty to keep current)</small></label>
+            <div class="drop-zone" style="padding:1.2rem;">
+              <input type="file" name="image" accept="image/*"/>
+              <i class="fas fa-cloud-upload-alt" style="font-size:1.8rem;color:var(--gold);margin-bottom:0.4rem;display:block;"></i>
+              <p style="font-size:0.8rem;color:var(--gray);">Click to upload new photo</p>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-cancel" onclick="closeEditProj()">Cancel</button>
+      <button class="btn-save" onclick="saveProject()"><i class="fas fa-save"></i> Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ EDIT CLIENT MODAL ═══ -->
+<div class="modal-backdrop" id="editClientModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3><i class="fas fa-edit"></i> Edit Client</h3>
+      <button class="modal-close-btn" onclick="closeEditClient()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="save-note" id="ecNote"></div>
+      <input type="hidden" id="ecId"/>
+      <div class="form-grid">
+        <div class="fg"><label>Client / Company Name *</label><input type="text" id="ecName" required/></div>
+        <div class="fg">
+          <label>Industry</label>
+          <select id="ecIndustry">
+            <option value="">-- Select --</option>
+            <option>Manufacturing</option><option>Commercial</option><option>Healthcare</option>
+            <option>Agriculture</option><option>Construction</option><option>Education</option>
+            <option>Water Treatment</option><option>Power Utilities</option><option>Other</option>
+          </select>
+        </div>
+        <div class="fg full"><label>Work Done</label><textarea id="ecWork" rows="2"></textarea></div>
+        <div class="fg full"><label>Location</label><input type="text" id="ecLoc"/></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-cancel" onclick="closeEditClient()">Cancel</button>
+      <button class="btn-save" onclick="saveClient()"><i class="fas fa-save"></i> Save</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% block title %}Products | Upadhyay Brothers & Co.{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="breadcrumb"><a href="/">Home</a> › Products</div>
+  <h1>Our Products</h1>
+  <p>High-quality electrical panels & control systems — engineered in Kanpur</p>
+</div>
+
+<section style="background: var(--off-white); padding: 60px 0;">
+  <div class="container">
+
+    {% if dynamic_products %}
+      {% for prod in dynamic_products %}
+      {% set images = prod_images[prod.id] %}
+      {% set reverse = 'reverse' if loop.index is even else '' %}
+
+      <div class="product-full-card fade-up {{ reverse }}" id="prod-{{ prod.id }}">
+        <div class="pfc-img {% if images|length > 1 %}pfc-slider-wrap{% endif %}">
+          {% if images|length == 0 %}
+            <div class="pfc-no-img"><i class="fas fa-bolt"></i></div>
+          {% elif images|length == 1 %}
+            <img src="/static/{{ images[0].image_path }}" alt="{{ prod.name }}"/>
+          {% else %}
+            <div class="pfc-slides" id="slides-{{ prod.id }}">
+              {% for img in images %}
+              <img src="/static/{{ img.image_path }}" alt="{{ prod.name }} {{ loop.index }}" class="pfc-slide {% if loop.first %}active{% endif %}"/>
+              {% endfor %}
+            </div>
+            <button class="pfc-prev" onclick="prodSlide('{{ prod.id }}',-1)"><i class="fas fa-chevron-left"></i></button>
+            <button class="pfc-next" onclick="prodSlide('{{ prod.id }}',1)"><i class="fas fa-chevron-right"></i></button>
+            <div class="pfc-dots" id="dots-{{ prod.id }}">
+              {% for img in images %}<span class="pfc-dot {% if loop.first %}active{% endif %}" onclick="prodGoTo('{{ prod.id }}',{{ loop.index0 }})"></span>{% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="pfc-body">
+          <span class="product-badge-tag" style="position:static;display:inline-block;margin-bottom:1rem;">{{ prod.badge or prod.name }}</span>
+          <h2>{{ prod.name }}</h2>
+          {% if prod.description %}<p>{{ prod.description }}</p>{% endif %}
+          {% if prod.specs %}
+          <div class="spec-table">
+            <h4><i class="fas fa-list-ul"></i> Specifications</h4>
+            <table>
+              {% for line in prod.specs.split('\n') %}{% set line = line.strip() %}{% if ':' in line %}{% set parts = line.split(':',1) %}<tr><td>{{ parts[0].strip() }}</td><td>{{ parts[1].strip() }}</td></tr>{% endif %}{% endfor %}
+            </table>
+          </div>
+          {% endif %}
+          <button class="btn-enquiry" style="width:auto;padding:12px 30px;" onclick="openModal('{{ prod.name }}')"><i class="fas fa-paper-plane"></i> Enquiry Now</button>
+        </div>
+      </div>
+      {% endfor %}
+
+    {% else %}
+      <div style="text-align:center;padding:5rem 2rem;color:var(--gray);">
+        <i class="fas fa-bolt" style="font-size:3rem;color:var(--light-gray);display:block;margin-bottom:1rem;"></i>
+        <h3 style="color:var(--navy);margin-bottom:0.5rem;">Products Coming Soon</h3>
+        <p>Products will appear here once added by the admin.</p>
+      </div>
+    {% endif %}
+
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.product-full-card{display:grid;grid-template-columns:1fr 1fr;gap:3rem;background:var(--white);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);margin-bottom:3rem;border:1px solid var(--light-gray);}
+.product-full-card.reverse{direction:rtl;}
+.product-full-card.reverse>*{direction:ltr;}
+.pfc-img{overflow:hidden;}
+.pfc-img img{width:100%;height:100%;object-fit:cover;min-height:400px;transition:transform 0.6s ease;}
+.product-full-card:hover .pfc-img img{transform:scale(1.04);}
+.pfc-no-img{width:100%;min-height:400px;background:linear-gradient(135deg,var(--navy),var(--navy-mid));display:flex;align-items:center;justify-content:center;}
+.pfc-no-img i{font-size:4rem;color:rgba(201,168,76,0.3);}
+.pfc-body{padding:3rem 2.5rem;display:flex;flex-direction:column;justify-content:center;}
+.pfc-body h2{font-family:'Playfair Display',serif;font-size:1.7rem;color:var(--navy);margin-bottom:1rem;}
+.pfc-body p{color:var(--gray);line-height:1.8;font-size:0.92rem;margin-bottom:1.5rem;}
+.spec-table{margin-bottom:1.5rem;}
+.spec-table h4{font-size:0.85rem;color:var(--navy);font-weight:700;margin-bottom:0.8rem;display:flex;align-items:center;gap:6px;}
+.spec-table h4 i{color:var(--gold);}
+.spec-table table{width:100%;border-collapse:collapse;font-size:0.85rem;}
+.spec-table table tr{border-bottom:1px solid var(--light-gray);}
+.spec-table table tr:last-child{border-bottom:none;}
+.spec-table table td{padding:7px 10px;}
+.spec-table table td:first-child{color:var(--gray);width:45%;}
+.spec-table table td:last-child{color:var(--navy);font-weight:500;}
+.pfc-slider-wrap{position:relative;overflow:hidden;min-height:400px;}
+.pfc-slide{width:100%;height:100%;object-fit:cover;min-height:400px;display:none;}
+.pfc-slide.active{display:block;}
+.pfc-prev,.pfc-next{position:absolute;top:50%;transform:translateY(-50%);background:rgba(10,22,40,0.6);border:2px solid var(--gold);color:var(--gold);width:40px;height:40px;border-radius:50%;font-size:0.9rem;cursor:pointer;z-index:5;display:flex;align-items:center;justify-content:center;transition:all 0.2s;backdrop-filter:blur(4px);}
+.pfc-prev{left:12px;}.pfc-next{right:12px;}
+.pfc-prev:hover,.pfc-next:hover{background:var(--gold);color:var(--navy);}
+.pfc-dots{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:5;}
+.pfc-dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,0.4);border:2px solid transparent;cursor:pointer;transition:all 0.2s;}
+.pfc-dot.active{background:var(--gold);border-color:var(--gold);transform:scale(1.2);}
+@media(max-width:768px){
+  .product-full-card{grid-template-columns:1fr;}
+  .product-full-card.reverse{direction:ltr;}
+  .pfc-img img,.pfc-no-img,.pfc-slider-wrap,.pfc-slide{min-height:260px;}
+  .pfc-body{padding:2rem 1.5rem;}
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const sliderState = {};
+  function prodGoTo(pid, idx) {
+    const slides = document.querySelectorAll('#slides-' + pid + ' .pfc-slide');
+    const dots   = document.querySelectorAll('#dots-'   + pid + ' .pfc-dot');
+    if (!slides.length) return;
+    const cur = sliderState[pid] || 0;
+    slides[cur].classList.remove('active');
+    if (dots[cur]) dots[cur].classList.remove('active');
+    sliderState[pid] = (idx + slides.length) % slides.length;
+    slides[sliderState[pid]].classList.add('active');
+    if (dots[sliderState[pid]]) dots[sliderState[pid]].classList.add('active');
+  }
+  function prodSlide(pid, dir) { prodGoTo(pid, (sliderState[pid] || 0) + dir); }
+  document.querySelectorAll('[id^="slides-"]').forEach(el => {
+    const pid = el.id.replace('slides-', '');
+    sliderState[pid] = 0;
+    setInterval(() => prodSlide(pid, 1), 3800);
+  });
+</script>
+{% endblock %}

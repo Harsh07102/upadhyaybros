@@ -1,0 +1,268 @@
+{% extends 'base.html' %}
+{% block title %}Past Work & Clients | Upadhyay Brothers & Co.{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="breadcrumb"><a href="/">Home</a> › Past Work & Clients</div>
+  <h1>Past Work & Clients</h1>
+  <p>A showcase of our projects and the industries we have proudly served</p>
+</div>
+
+<section style="background: var(--off-white); padding: 70px 0;">
+  <div class="container">
+
+    <!-- Project Gallery -->
+    <div class="text-center fade-up" style="margin-bottom: 3rem;">
+      <span class="section-tag">Our Work</span>
+      <h2 class="section-title">Projects We're <span>Proud Of</span></h2>
+      <div class="gold-divider"></div>
+      <p class="section-desc">Every panel we manufacture tells a story of precision engineering and client trust.</p>
+    </div>
+
+    <div class="gallery-grid fade-up">
+      {% if projects %}
+        {% for p in projects %}
+        <div class="gallery-item">
+          {% if p.image_path %}
+            <img src="{{ url_for('static', filename=p.image_path) }}" alt="{{ p.title }}"/>
+          {% else %}
+            <div style="width:100%;height:100%;background:var(--navy-mid);display:flex;align-items:center;justify-content:center;">
+              <i class="fas fa-bolt" style="font-size:3rem;color:var(--gold);"></i>
+            </div>
+          {% endif %}
+          <div class="gallery-overlay">
+            <h4>{{ p.title }}</h4>
+            <p>{{ p.description }}</p>
+            {% if p.client_name %}<p style="color:var(--gold);font-size:0.75rem;margin-top:4px;"><i class="fas fa-building"></i> {{ p.client_name }}</p>{% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="gallery-item placeholder-gallery">
+          <div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:1rem;color:rgba(255,255,255,0.6);">
+            <i class="fas fa-plus-circle" style="font-size:2.5rem;color:var(--gold);"></i>
+            <p style="font-size:0.9rem;">Projects will appear here once added by admin</p>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Industries Served -->
+    <div style="margin-top: 5rem;">
+      <div class="text-center fade-up">
+        <span class="section-tag">Industries</span>
+        <h2 class="section-title">Industries We <span>Serve</span></h2>
+        <div class="gold-divider"></div>
+      </div>
+      <div class="industries-grid fade-up">
+        <div class="industry-card">
+          <i class="fas fa-industry"></i>
+          <h4>Manufacturing</h4>
+          <p>Factory floor panels and motor control systems</p>
+        </div>
+        <div class="industry-card">
+          <i class="fas fa-tint"></i>
+          <h4>Water Treatment</h4>
+          <p>Pump control and distribution panels</p>
+        </div>
+        <div class="industry-card">
+          <i class="fas fa-hospital"></i>
+          <h4>Healthcare</h4>
+          <p>Silent DG sets and reliable power systems</p>
+        </div>
+        <div class="industry-card">
+          <i class="fas fa-building"></i>
+          <h4>Commercial Buildings</h4>
+          <p>LDB and main distribution boards</p>
+        </div>
+        <div class="industry-card">
+          <i class="fas fa-seedling"></i>
+          <h4>Agriculture</h4>
+          <p>Submersible pump and AMF panels</p>
+        </div>
+        <div class="industry-card">
+          <i class="fas fa-hard-hat"></i>
+          <h4>Construction</h4>
+          <p>Feeder pillars and temporary supply panels</p>
+        </div>
+        <div class="industry-card">
+          <i class="fas fa-graduation-cap"></i>
+          <h4>Education</h4>
+          <p>Institutional electrical distribution systems</p>
+        </div>
+        <div class="industry-card">
+          <i class="fas fa-plug"></i>
+          <h4>Power Utilities</h4>
+          <p>Feeder pillars and metering panels</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Clients Section -->
+    <div style="margin-top: 5rem;">
+      <div class="text-center fade-up">
+        <span class="section-tag">Our Clients</span>
+        <h2 class="section-title">Trusted by <span>200+ Clients</span></h2>
+        <div class="gold-divider"></div>
+        <p class="section-desc">We are proud to have served a wide range of industries and businesses across Uttar Pradesh and beyond.</p>
+      </div>
+      <!-- Logo Slider -->
+      <div class="clients-strip fade-up" style="border-radius:16px; overflow:hidden; border:1px solid var(--light-gray); margin-top:1rem;">
+        <div class="clients-track-wrap" style="-webkit-mask-image:linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%); mask-image:linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);">
+          <div class="clients-track" style="padding: 1.5rem 0;">
+            <div class="client-logo"><img src="{{ url_for('static', filename='images/logos/l1.jpeg') }}" alt="Padam Cables"/></div>
+            <div class="client-logo"><img src="{{ url_for('static', filename='images/logos/l2.jpeg') }}" alt="PVJ Power"/></div>
+            <div class="client-logo"><img src="{{ url_for('static', filename='images/logos/l3.jpeg') }}" alt="C&S Electric"/></div>
+            <div class="client-logo"><img src="{{ url_for('static', filename='images/logos/l4.jpeg') }}" alt="Subodhan"/></div>
+            <div class="client-logo"><img src="{{ url_for('static', filename='images/logos/l5.jpeg') }}" alt="PVJ Power"/></div>
+            <div class="client-logo"><img src="{{ url_for('static', filename='images/logos/l6.jpeg') }}" alt="Telergon"/></div>
+            <div class="client-logo"><img src="{{ url_for('static', filename='images/logos/l7.jpeg') }}" alt="Siemens"/></div>
+            <div class="client-logo"><img src="{{ url_for('static', filename='images/logos/l1.jpeg') }}" alt="Padam Cables"/></div>
+            <div class="client-logo"><img src="{{ url_for('static', filename='images/logos/l2.jpeg') }}" alt="PVJ Power"/></div>
+            <div class="client-logo"><img src="{{ url_for('static', filename='images/logos/l3.jpeg') }}" alt="C&S Electric"/></div>
+            <div class="client-logo"><img src="{{ url_for('static', filename='images/logos/l4.jpeg') }}" alt="Subodhan"/></div>
+            <div class="client-logo"><img src="{{ url_for('static', filename='images/logos/l5.jpeg') }}" alt="PVJ Power"/></div>
+            <div class="client-logo"><img src="{{ url_for('static', filename='images/logos/l6.jpeg') }}" alt="Telergon"/></div>
+            <div class="client-logo"><img src="{{ url_for('static', filename='images/logos/l7.jpeg') }}" alt="Siemens"/></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dynamic Client Cards -->
+      {% if clients %}
+      <div class="clients-cards-grid fade-up" style="margin-top:2.5rem;">
+        {% for cl in clients %}
+        <div class="client-info-card">
+          <div class="cic-icon"><i class="fas fa-building"></i></div>
+          <div class="cic-body">
+            <h4>{{ cl.name }}</h4>
+            {% if cl.industry %}<span class="cic-industry">{{ cl.industry }}</span>{% endif %}
+            {% if cl.work_done %}<p>{{ cl.work_done }}</p>{% endif %}
+            {% if cl.location %}<p class="cic-location"><i class="fas fa-map-marker-alt"></i> {{ cl.location }}</p>{% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Testimonial / CTA -->
+    <div class="cta-banner fade-up">
+      <div class="cta-inner">
+        <h2>Ready to Work with Us?</h2>
+        <p>Join 200+ satisfied clients who trust Upadhyay Brothers & Co. for all their electrical panel needs.</p>
+        <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; margin-top:1.5rem;">
+          <button onclick="openModal('')" class="btn-gold"><i class="fas fa-paper-plane"></i> Send an Enquiry</button>
+          <a href="/products" class="btn-outline"><i class="fas fa-th-large"></i> View Products</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+.gallery-item {
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  height: 260px;
+  box-shadow: var(--shadow);
+}
+.gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+.gallery-item:hover img { transform: scale(1.08); }
+.gallery-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(10,22,40,0.85) 0%, transparent 50%);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  transform: translateY(20px);
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+.gallery-item:hover .gallery-overlay { opacity: 1; transform: translateY(0); }
+.gallery-overlay h4 { color: var(--gold); font-size: 1rem; font-weight: 700; }
+.gallery-overlay p { color: rgba(255,255,255,0.8); font-size: 0.82rem; margin-top: 4px; }
+.placeholder-gallery { background: var(--navy-mid); }
+
+.industries-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+}
+.industry-card {
+  background: var(--white);
+  border-radius: 12px;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  border: 1px solid var(--light-gray);
+  transition: var(--transition);
+  box-shadow: var(--shadow);
+}
+.industry-card:hover { transform: translateY(-4px); border-color: var(--gold); }
+.industry-card i { font-size: 2rem; color: var(--gold); margin-bottom: 0.8rem; }
+.industry-card h4 { color: var(--navy); font-size: 0.95rem; font-weight: 700; margin-bottom: 0.4rem; }
+.industry-card p { color: var(--gray); font-size: 0.82rem; line-height: 1.5; }
+
+.clients-cards-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:1.2rem; }
+.client-info-card { background:var(--white); border-radius:12px; border:1px solid var(--light-gray); padding:1.2rem 1.4rem; display:flex; gap:1rem; align-items:flex-start; box-shadow:0 2px 8px rgba(0,0,0,0.05); transition:all 0.2s; }
+.client-info-card:hover { transform:translateY(-3px); border-color:var(--gold); box-shadow:0 6px 20px rgba(0,0,0,0.1); }
+.cic-icon { width:40px; height:40px; border-radius:10px; background:rgba(201,168,76,0.1); border:1px solid rgba(201,168,76,0.25); display:flex; align-items:center; justify-content:center; color:var(--gold); font-size:1rem; flex-shrink:0; }
+.cic-body h4 { font-size:0.92rem; font-weight:700; color:var(--navy); margin-bottom:3px; }
+.cic-industry { font-size:0.7rem; background:rgba(10,22,40,0.07); color:var(--navy); padding:2px 8px; border-radius:50px; font-weight:600; display:inline-block; margin-bottom:5px; }
+.cic-body p { font-size:0.78rem; color:var(--gray); line-height:1.5; }
+.cic-location { color:var(--gray); font-size:0.72rem; margin-top:3px; display:flex; align-items:center; gap:4px; }
+.cic-location i { color:var(--gold); }
+  background: var(--white);
+  border-radius: 16px;
+  border: 2px dashed var(--gold);
+  margin-top: 2rem;
+}
+.client-placeholder {
+  text-align: center;
+  padding: 3.5rem 2rem;
+  color: var(--gray);
+}
+.client-placeholder i { font-size: 3rem; color: var(--gold); margin-bottom: 1rem; }
+
+.cta-banner {
+  margin-top: 4rem;
+  border-radius: 20px;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+  border: 1px solid rgba(201,168,76,0.3);
+  overflow: hidden;
+  position: relative;
+}
+.cta-banner::before {
+  content:'';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 70% 50%, rgba(201,168,76,0.07) 0%, transparent 70%);
+}
+.cta-inner { position: relative; z-index: 1; text-align: center; padding: 4rem 2rem; }
+.cta-inner h2 { font-family: 'Playfair Display', serif; font-size: 2.2rem; color: var(--white); margin-bottom: 0.8rem; }
+.cta-inner p { color: rgba(255,255,255,0.7); font-size: 1rem; }
+
+@media(max-width: 1024px) { .industries-grid { grid-template-columns: repeat(2, 1fr); } }
+@media(max-width: 768px) {
+  .gallery-grid { grid-template-columns: 1fr 1fr; }
+  .industries-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media(max-width: 480px) {
+  .gallery-grid { grid-template-columns: 1fr; }
+  .industries-grid { grid-template-columns: 1fr; }
+}
+</style>
+{% endblock %}

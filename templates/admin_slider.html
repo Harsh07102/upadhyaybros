@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manage Homepage Slider | UBC Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root{--navy:#0a1628;--navy-mid:#132040;--gold:#c9a84c;--white:#fff;--off-white:#f8f6f0;--gray:#6b7280;--light-gray:#e5e7eb;--red:#dc2626;--green:#16a34a;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Outfit',sans-serif;background:var(--off-white);display:flex;min-height:100vh;}
+    /* Sidebar */
+    .sidebar{width:260px;min-height:100vh;background:var(--navy);border-right:1px solid rgba(201,168,76,0.15);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;}
+    .sidebar-brand{padding:1.5rem;border-bottom:1px solid rgba(201,168,76,0.15);display:flex;align-items:center;gap:12px;}
+    .sidebar-brand img{width:44px;height:44px;border-radius:50%;border:2px solid var(--gold);background:#000;object-fit:contain;}
+    .sidebar-brand h3{font-family:'Playfair Display',serif;color:var(--white);font-size:0.95rem;}
+    .sidebar-brand p{color:var(--gold);font-size:0.68rem;letter-spacing:1.5px;}
+    .sidebar-nav{flex:1;padding:1rem 0;}
+    .nav-item{display:flex;align-items:center;gap:12px;padding:11px 1.5rem;color:rgba(255,255,255,0.65);text-decoration:none;font-size:0.88rem;font-weight:500;transition:all 0.2s;border-left:3px solid transparent;}
+    .nav-item:hover,.nav-item.active{color:var(--gold);background:rgba(201,168,76,0.07);border-left-color:var(--gold);}
+    .nav-item i{width:18px;text-align:center;}
+    .sidebar-footer{padding:1rem 1.5rem;border-top:1px solid rgba(255,255,255,0.05);}
+    .logout-btn{width:100%;background:rgba(220,38,38,0.1);border:1px solid rgba(220,38,38,0.2);color:#fca5a5;padding:10px;border-radius:8px;cursor:pointer;font-family:'Outfit',sans-serif;font-size:0.85rem;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;transition:all 0.2s;}
+    .logout-btn:hover{background:rgba(220,38,38,0.25);}
+    /* Main */
+    .main{margin-left:260px;flex:1;padding:2rem;}
+    .page-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:2rem;}
+    .page-top h1{font-family:'Playfair Display',serif;font-size:1.7rem;color:var(--navy);}
+    .page-top p{color:var(--gray);font-size:0.85rem;}
+    .view-btn{background:var(--gold);color:var(--navy);padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:700;font-size:0.85rem;display:inline-flex;align-items:center;gap:6px;}
+    /* Cards */
+    .card{background:var(--white);border-radius:16px;border:1px solid var(--light-gray);box-shadow:0 2px 12px rgba(0,0,0,0.06);overflow:hidden;margin-bottom:2rem;}
+    .card-head{padding:1.2rem 1.5rem;border-bottom:1px solid var(--light-gray);background:linear-gradient(135deg,var(--navy),var(--navy-mid));display:flex;align-items:center;gap:10px;}
+    .card-head h3{color:var(--white);font-size:1rem;font-weight:700;}
+    .card-head i{color:var(--gold);}
+    .card-body{padding:1.8rem;}
+    /* Form */
+    .fg{display:flex;flex-direction:column;gap:6px;margin-bottom:1rem;}
+    .fg label{font-size:0.82rem;font-weight:600;color:var(--navy);}
+    .fg label small{font-weight:400;color:var(--gray);margin-left:4px;}
+    .fg input,.fg textarea{padding:10px 14px;border:1.5px solid var(--light-gray);border-radius:8px;font-family:'Outfit',sans-serif;font-size:0.88rem;color:var(--navy);outline:none;transition:all 0.2s;}
+    .fg input:focus,.fg textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,0.1);}
+    .fg textarea{resize:vertical;}
+    /* Image drop */
+    .img-drop{border:2px dashed var(--light-gray);border-radius:10px;padding:1.5rem;text-align:center;cursor:pointer;position:relative;background:#fafafa;transition:all 0.2s;}
+    .img-drop:hover{border-color:var(--gold);}
+    .img-drop input{position:absolute;inset:0;opacity:0;cursor:pointer;}
+    .img-drop i{font-size:2rem;color:var(--gold);display:block;margin-bottom:0.5rem;}
+    .img-drop p{font-size:0.82rem;color:var(--gray);}
+    .img-preview-box{margin-top:0.8rem;display:none;}
+    .img-preview-box img{width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:2px solid var(--gold);}
+    /* Buttons */
+    .btn-add{background:var(--navy);color:var(--gold);padding:11px 26px;border-radius:8px;border:none;font-weight:700;font-size:0.9rem;cursor:pointer;display:inline-flex;align-items:center;gap:7px;font-family:'Outfit',sans-serif;transition:all 0.2s;margin-top:0.5rem;}
+    .btn-add:hover{background:var(--gold);color:var(--navy);}
+    .btn-add:disabled{opacity:0.6;cursor:not-allowed;}
+    /* Alert */
+    .alert{padding:10px 14px;border-radius:8px;font-size:0.85rem;margin-bottom:1rem;display:none;}
+    .alert.ok{background:#d1fae5;color:#065f46;}
+    .alert.err{background:#fee2e2;color:#991b1b;}
+    /* Info tip */
+    .info-tip{background:rgba(59,130,246,0.07);border:1px solid rgba(59,130,246,0.18);border-radius:10px;padding:1rem 1.2rem;font-size:0.82rem;color:#1d4ed8;display:flex;gap:10px;align-items:flex-start;margin-bottom:1.5rem;}
+    /* Slides list */
+    .slides-list{display:flex;flex-direction:column;gap:1rem;}
+    /* Single slide card */
+    .slide-admin-card{background:var(--white);border-radius:14px;border:2px solid var(--light-gray);display:grid;grid-template-columns:40px 180px 1fr auto;align-items:stretch;overflow:hidden;transition:all 0.2s;box-shadow:0 2px 8px rgba(0,0,0,0.04);}
+    .slide-admin-card:hover{box-shadow:0 6px 20px rgba(0,0,0,0.1);}
+    .slide-admin-card.inactive{opacity:0.55;border-style:dashed;}
+    .slide-admin-card.dragging{opacity:0.4;border:2px dashed var(--gold);}
+    .slide-admin-card.drag-over{border:2px solid var(--gold);background:rgba(201,168,76,0.04);}
+    /* Drag handle */
+    .drag-handle{display:flex;align-items:center;justify-content:center;background:var(--off-white);border-right:1px solid var(--light-gray);cursor:grab;color:var(--gray);font-size:1rem;transition:all 0.2s;}
+    .drag-handle:hover{background:var(--gold);color:var(--navy);}
+    .drag-handle:active{cursor:grabbing;}
+    /* Slide thumbnail */
+    .slide-thumb{overflow:hidden;position:relative;}
+    .slide-thumb img{width:100%;height:110px;object-fit:cover;}
+    .slide-thumb .no-img{width:100%;height:110px;background:linear-gradient(135deg,var(--navy),var(--navy-mid));display:flex;align-items:center;justify-content:center;color:rgba(201,168,76,0.4);font-size:1.8rem;}
+    .slide-num{position:absolute;top:6px;left:6px;background:rgba(0,0,0,0.6);color:var(--gold);font-size:0.65rem;font-weight:700;padding:2px 7px;border-radius:50px;}
+    /* Slide body */
+    .slide-body{padding:1rem 1.2rem;display:flex;flex-direction:column;justify-content:center;gap:4px;}
+    .slide-eyebrow-text{font-size:0.7rem;color:var(--gold);font-weight:600;text-transform:uppercase;letter-spacing:1px;}
+    .slide-title-text{font-weight:700;color:var(--navy);font-size:0.92rem;line-height:1.4;}
+    .slide-desc-text{font-size:0.78rem;color:var(--gray);line-height:1.5;margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    /* Actions */
+    .slide-actions{padding:1rem;display:flex;flex-direction:column;gap:6px;border-left:1px solid var(--light-gray);min-width:100px;justify-content:center;}
+    .btn-edit{background:rgba(201,168,76,0.12);color:#92600a;border:none;padding:7px 12px;border-radius:7px;cursor:pointer;font-size:0.75rem;font-weight:600;transition:all 0.2s;font-family:'Outfit',sans-serif;display:flex;align-items:center;gap:5px;white-space:nowrap;}
+    .btn-edit:hover{background:var(--gold);color:var(--navy);}
+    .btn-toggle{border:none;padding:7px 12px;border-radius:7px;cursor:pointer;font-size:0.75rem;font-weight:600;transition:all 0.2s;font-family:'Outfit',sans-serif;display:flex;align-items:center;gap:5px;white-space:nowrap;}
+    .btn-toggle.on{background:rgba(22,163,74,0.1);color:#15803d;}
+    .btn-toggle.on:hover{background:#16a34a;color:white;}
+    .btn-toggle.off{background:rgba(107,114,128,0.1);color:var(--gray);}
+    .btn-toggle.off:hover{background:var(--gray);color:white;}
+    .btn-del{background:rgba(220,38,38,0.1);color:var(--red);border:none;padding:7px 12px;border-radius:7px;cursor:pointer;font-size:0.75rem;font-weight:600;transition:all 0.2s;font-family:'Outfit',sans-serif;display:flex;align-items:center;gap:5px;white-space:nowrap;}
+    .btn-del:hover{background:var(--red);color:white;}
+    .drag-tip{font-size:0.75rem;color:var(--gray);display:flex;align-items:center;gap:6px;margin-bottom:0.8rem;}
+    .drag-tip i{color:var(--gold);}
+    /* Modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:1000;display:none;align-items:center;justify-content:center;padding:1rem;}
+    .modal-backdrop.open{display:flex;}
+    .modal-box{background:var(--white);border-radius:18px;width:100%;max-width:600px;max-height:92vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,0.3);}
+    .modal-head{padding:1.2rem 1.5rem;background:linear-gradient(135deg,var(--navy),var(--navy-mid));display:flex;align-items:center;justify-content:space-between;border-radius:18px 18px 0 0;}
+    .modal-head h3{color:var(--white);font-size:1rem;font-weight:700;display:flex;align-items:center;gap:8px;}
+    .modal-head h3 i{color:var(--gold);}
+    .modal-close-btn{background:rgba(255,255,255,0.1);border:none;color:rgba(255,255,255,0.7);width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:0.85rem;display:flex;align-items:center;justify-content:center;}
+    .modal-close-btn:hover{background:rgba(220,38,38,0.4);color:white;}
+    .modal-body{padding:1.5rem;}
+    .modal-foot{padding:1rem 1.5rem;border-top:1px solid var(--light-gray);display:flex;gap:0.8rem;justify-content:flex-end;}
+    .btn-save{background:var(--navy);color:var(--gold);padding:10px 22px;border-radius:8px;border:none;font-weight:700;font-size:0.88rem;cursor:pointer;font-family:'Outfit',sans-serif;display:inline-flex;align-items:center;gap:6px;transition:all 0.2s;}
+    .btn-save:hover{background:var(--gold);color:var(--navy);}
+    .btn-cancel{background:var(--off-white);color:var(--gray);padding:10px 18px;border-radius:8px;border:1px solid var(--light-gray);font-weight:600;font-size:0.88rem;cursor:pointer;font-family:'Outfit',sans-serif;}
+    .save-note{padding:9px 13px;border-radius:7px;font-size:0.82rem;margin-bottom:0.8rem;display:none;}
+    .save-note.ok{background:#d1fae5;color:#065f46;}
+    .save-note.err{background:#fee2e2;color:#991b1b;}
+    .empty{text-align:center;padding:3rem;color:var(--gray);}
+    .empty i{font-size:3rem;color:var(--light-gray);display:block;margin-bottom:1rem;}
+    .slide-count{font-size:0.8rem;color:var(--gray);font-weight:400;margin-left:8px;}
+  </style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <img src="/static/images/logo.png" alt="UBC"/>
+    <div><h3>UBC Admin</h3><p>MANAGEMENT PORTAL</p></div>
+  </div>
+  <nav class="sidebar-nav">
+    <a class="nav-item" href="/admin/dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+    <a class="nav-item" href="/admin/dashboard"><i class="fas fa-envelope-open-text"></i> Enquiries</a>
+    <a class="nav-item" href="/admin/applications"><i class="fas fa-user-tie"></i> Job Applications</a>
+    <a class="nav-item active" href="/admin/slider"><i class="fas fa-images"></i> Homepage Slider</a>
+    <a class="nav-item" href="/admin/products"><i class="fas fa-bolt"></i> Products</a>
+    <a class="nav-item" href="/admin/past-work"><i class="fas fa-folder-open"></i> Past Work</a>
+    <a class="nav-item" href="/admin/certificates"><i class="fas fa-certificate"></i> Certificates</a>
+    <a class="nav-item" href="/" target="_blank"><i class="fas fa-globe"></i> View Website</a>
+  </nav>
+  <div class="sidebar-footer">
+    <a href="/admin/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="page-top">
+    <div>
+      <h1>🖼️ Homepage Slider</h1>
+      <p>Add, edit, reorder or hide slides on the homepage hero section</p>
+    </div>
+    <a href="/" target="_blank" class="view-btn"><i class="fas fa-external-link-alt"></i> View Homepage</a>
+  </div>
+
+  <div class="info-tip">
+    <i class="fas fa-info-circle" style="margin-top:2px;"></i>
+    <div>
+      <strong>How to use:</strong> Add a new slide below, then see it appear in the list.
+      <strong>Drag the ≡ handle</strong> to reorder slides. Use the <strong>toggle button</strong> to temporarily hide a slide without deleting it.
+      Changes appear on the homepage <strong>instantly</strong>.
+    </div>
+  </div>
+
+  <!-- Add Slide Form -->
+  <div class="card">
+    <div class="card-head"><i class="fas fa-plus-circle"></i><h3>Add New Slide</h3></div>
+    <div class="card-body">
+      <div id="addAlert" class="alert"></div>
+      <form id="addSlideForm" enctype="multipart/form-data">
+        <div class="fg">
+          <label><i class="fas fa-tag" style="color:var(--gold);margin-right:4px;"></i> Eyebrow Text <small>(small text above title — e.g. "Est. 2003 · Kanpur")</small></label>
+          <input type="text" name="eyebrow" placeholder="e.g. Motor Control Centres"/>
+        </div>
+        <div class="fg">
+          <label><i class="fas fa-heading" style="color:var(--gold);margin-right:4px;"></i> Slide Title <span style="color:var(--red);">*</span></label>
+          <input type="text" name="title" placeholder="e.g. Industrial-Grade MCC Panels Built to Last" required/>
+        </div>
+        <div class="fg">
+          <label><i class="fas fa-align-left" style="color:var(--gold);margin-right:4px;"></i> Description <small>(shown below the title)</small></label>
+          <textarea name="description" rows="3" placeholder="Short description for this slide..."></textarea>
+        </div>
+        <div class="fg">
+          <label><i class="fas fa-image" style="color:var(--gold);margin-right:4px;"></i> Background Image <span style="color:var(--red);">*</span></label>
+          <div class="img-drop" id="addImgDrop">
+            <input type="file" name="image" accept="image/*" onchange="previewImg(this,'addImgPreview','addImgPreviewBox')"/>
+            <i class="fas fa-cloud-upload-alt"></i>
+            <p>Click to upload slide image (best: landscape, 1920×800px or wider)</p>
+          </div>
+          <div class="img-preview-box" id="addImgPreviewBox">
+            <img id="addImgPreview" src="" alt="Preview"/>
+          </div>
+        </div>
+        <button type="submit" class="btn-add" id="addBtn">
+          <i class="fas fa-plus"></i> Add Slide
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Slides List -->
+  <h2 style="font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--navy);margin-bottom:1rem;">
+    <i class="fas fa-layer-group" style="color:var(--gold);margin-right:8px;"></i> Current Slides
+    <span class="slide-count">({{ slides|length }} total — drag to reorder)</span>
+  </h2>
+
+  {% if slides %}
+  <div class="drag-tip"><i class="fas fa-grip-vertical"></i> Drag the left handle to change the order slides appear on the homepage</div>
+  <div class="slides-list" id="slidesList">
+    {% for slide in slides %}
+    <div class="slide-admin-card {% if not slide.is_active %}inactive{% endif %}"
+         id="scard-{{ slide.id }}" data-id="{{ slide.id }}" draggable="true">
+
+      <!-- Drag handle -->
+      <div class="drag-handle" title="Drag to reorder">
+        <i class="fas fa-grip-vertical"></i>
+      </div>
+
+      <!-- Thumbnail -->
+      <div class="slide-thumb">
+        {% if slide.image_path %}
+        <img src="/static/{{ slide.image_path }}" alt="{{ slide.title }}"/>
+        {% else %}
+        <div class="no-img"><i class="fas fa-image"></i></div>
+        {% endif %}
+        <span class="slide-num">{{ loop.index }}</span>
+      </div>
+
+      <!-- Text body -->
+      <div class="slide-body">
+        {% if slide.eyebrow %}<div class="slide-eyebrow-text">{{ slide.eyebrow }}</div>{% endif %}
+        <div class="slide-title-text">{{ slide.title }}</div>
+        {% if slide.description %}<div class="slide-desc-text">{{ slide.description }}</div>{% endif %}
+        {% if not slide.is_active %}<span style="font-size:0.7rem;color:var(--gray);margin-top:4px;"><i class="fas fa-eye-slash"></i> Hidden from website</span>{% endif %}
+      </div>
+
+      <!-- Action buttons -->
+      <div class="slide-actions">
+        <button class="btn-edit"
+                data-id="{{ slide.id }}"
+                data-eyebrow="{{ (slide.eyebrow or '')|e }}"
+                data-title="{{ slide.title|e }}"
+                data-desc="{{ (slide.description or '')|e }}"
+                data-img="{{ (slide.image_path or '')|e }}"
+                onclick="openEditSlideBtn(this)">
+          <i class="fas fa-edit"></i> Edit
+        </button>
+        <button class="btn-toggle {% if slide.is_active %}on{% else %}off{% endif %}"
+                id="toggle-{{ slide.id }}"
+                onclick="toggleSlide({{ slide.id }})">
+          <i class="fas fa-{% if slide.is_active %}eye{% else %}eye-slash{% endif %}"></i>
+          {% if slide.is_active %}Visible{% else %}Hidden{% endif %}
+        </button>
+        <button class="btn-del" onclick="deleteSlide({{ slide.id }})">
+          <i class="fas fa-trash"></i> Delete
+        </button>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty">
+    <i class="fas fa-images"></i>
+    <h3 style="color:var(--navy);margin-bottom:0.5rem;">No Slides Yet</h3>
+    <p>Add your first slide using the form above.</p>
+  </div>
+  {% endif %}
+</main>
+
+<!-- ═══ EDIT SLIDE MODAL ═══ -->
+<div class="modal-backdrop" id="editModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3><i class="fas fa-edit"></i> Edit Slide</h3>
+      <button class="modal-close-btn" onclick="closeEdit()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="save-note" id="editNote"></div>
+      <form id="editSlideForm" enctype="multipart/form-data">
+        <input type="hidden" id="editSlideId"/>
+        <div class="fg">
+          <label>Eyebrow Text <small>(optional small label above title)</small></label>
+          <input type="text" id="editEyebrow" name="eyebrow"/>
+        </div>
+        <div class="fg">
+          <label>Slide Title *</label>
+          <input type="text" id="editTitle" name="title" required/>
+        </div>
+        <div class="fg">
+          <label>Description</label>
+          <textarea id="editDesc" name="description" rows="3"></textarea>
+        </div>
+        <div class="fg">
+          <label>Replace Background Image <small>(leave empty to keep current)</small></label>
+          <div class="img-drop">
+            <input type="file" name="image" accept="image/*" onchange="previewImg(this,'editImgPreview','editImgPreviewBox')"/>
+            <i class="fas fa-cloud-upload-alt"></i>
+            <p>Click to upload a new image</p>
+          </div>
+          <div class="img-preview-box" id="editImgPreviewBox">
+            <img id="editImgPreview" src="" alt="Preview"/>
+          </div>
+          <div id="editCurrentImg" style="margin-top:0.6rem;"></div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-cancel" onclick="closeEdit()">Cancel</button>
+      <button class="btn-save" onclick="saveSlide()"><i class="fas fa-save"></i> Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── Image Preview ────────────────────────────────────────────────────────
+  function previewImg(input, previewId, boxId) {
+    const box = document.getElementById(boxId);
+    const img = document.getElementById(previewId);
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = e => { img.src = e.target.result; box.style.display = 'block'; };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  // ── Add Slide ────────────────────────────────────────────────────────────
+  document.getElementById('addSlideForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('addBtn');
+    const alertEl = document.getElementById('addAlert');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...'; btn.disabled = true;
+    try {
+      const res = await fetch('/admin/slider/add', { method: 'POST', body: new FormData(this) });
+      const d = await res.json();
+      if (d.success) {
+        alertEl.className = 'alert ok'; alertEl.textContent = '✅ Slide added! Refreshing...'; alertEl.style.display = 'block';
+        setTimeout(() => location.reload(), 1200);
+      } else {
+        alertEl.className = 'alert err'; alertEl.textContent = '❌ ' + (d.message || 'Error adding slide.'); alertEl.style.display = 'block';
+      }
+    } catch { alertEl.className = 'alert err'; alertEl.textContent = '❌ Network error.'; alertEl.style.display = 'block'; }
+    btn.innerHTML = '<i class="fas fa-plus"></i> Add Slide'; btn.disabled = false;
+  });
+
+  // ── Delete ───────────────────────────────────────────────────────────────
+  async function deleteSlide(id) {
+    if (!confirm('Delete this slide? This cannot be undone.')) return;
+    const res = await fetch('/admin/slider/delete/' + id, { method: 'POST' });
+    const d = await res.json();
+    if (d.success) {
+      document.getElementById('scard-' + id).remove();
+      renumberSlides();
+    }
+  }
+
+  // ── Toggle visibility ────────────────────────────────────────────────────
+  async function toggleSlide(id) {
+    const res = await fetch('/admin/slider/toggle/' + id, { method: 'POST' });
+    const d = await res.json();
+    if (d.success) {
+      const card = document.getElementById('scard-' + id);
+      const btn  = document.getElementById('toggle-' + id);
+      if (d.is_active) {
+        card.classList.remove('inactive');
+        btn.className = 'btn-toggle on';
+        btn.innerHTML = '<i class="fas fa-eye"></i> Visible';
+        card.querySelector('.slide-body span') && card.querySelector('.slide-body span[style]').remove();
+      } else {
+        card.classList.add('inactive');
+        btn.className = 'btn-toggle off';
+        btn.innerHTML = '<i class="fas fa-eye-slash"></i> Hidden';
+      }
+    }
+  }
+
+  // ── Edit Modal ───────────────────────────────────────────────────────────
+  function openEditSlideBtn(btn) {
+    openEditSlide(btn.dataset.id, btn.dataset.eyebrow, btn.dataset.title, btn.dataset.desc, btn.dataset.img);
+  }
+  function openEditSlide(id, eyebrow, title, desc, imgPath) {
+    document.getElementById('editSlideId').value = id;
+    document.getElementById('editEyebrow').value = eyebrow || '';
+    document.getElementById('editTitle').value = title || '';
+    document.getElementById('editDesc').value = desc || '';
+    document.getElementById('editImgPreviewBox').style.display = 'none';
+    const curImgEl = document.getElementById('editCurrentImg');
+    if (imgPath) {
+      curImgEl.innerHTML = `<p style="font-size:0.78rem;color:var(--gray);margin-bottom:4px;">Current image:</p><img src="/static/${imgPath}" style="width:100%;max-height:140px;object-fit:cover;border-radius:8px;border:2px solid var(--light-gray);"/>`;
+    } else {
+      curImgEl.innerHTML = '';
+    }
+    document.getElementById('editNote').style.display = 'none';
+    document.getElementById('editModal').classList.add('open');
+  }
+
+  function closeEdit() { document.getElementById('editModal').classList.remove('open'); }
+
+  async function saveSlide() {
+    const id = document.getElementById('editSlideId').value;
+    const note = document.getElementById('editNote');
+    const btn = document.querySelector('#editModal .btn-save');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...'; btn.disabled = true;
+    try {
+      const res = await fetch('/admin/slider/edit/' + id, { method: 'POST', body: new FormData(document.getElementById('editSlideForm')) });
+      const d = await res.json();
+      if (d.success) {
+        note.className = 'save-note ok'; note.textContent = '✅ Saved! Refreshing...'; note.style.display = 'block';
+        setTimeout(() => location.reload(), 1200);
+      } else {
+        note.className = 'save-note err'; note.textContent = '❌ Error.'; note.style.display = 'block';
+      }
+    } catch { note.className = 'save-note err'; note.textContent = '❌ Network error.'; note.style.display = 'block'; }
+    btn.innerHTML = '<i class="fas fa-save"></i> Save Changes'; btn.disabled = false;
+  }
+
+  document.getElementById('editModal').addEventListener('click', function(e) {
+    if (e.target === this) closeEdit();
+  });
+
+  // ── Drag & Drop Reorder ──────────────────────────────────────────────────
+  let dragSrc = null;
+
+  function renumberSlides() {
+    document.querySelectorAll('.slide-admin-card').forEach((card, i) => {
+      const numEl = card.querySelector('.slide-num');
+      if (numEl) numEl.textContent = i + 1;
+    });
+  }
+
+  document.getElementById('slidesList') && document.querySelectorAll('.slide-admin-card').forEach(card => {
+    card.addEventListener('dragstart', function(e) {
+      dragSrc = this;
+      this.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    card.addEventListener('dragend', function() {
+      this.classList.remove('dragging');
+      document.querySelectorAll('.slide-admin-card').forEach(c => c.classList.remove('drag-over'));
+      saveOrder();
+    });
+    card.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      document.querySelectorAll('.slide-admin-card').forEach(c => c.classList.remove('drag-over'));
+      if (this !== dragSrc) this.classList.add('drag-over');
+    });
+    card.addEventListener('drop', function(e) {
+      e.preventDefault();
+      if (dragSrc && dragSrc !== this) {
+        const list = document.getElementById('slidesList');
+        const allCards = [...list.querySelectorAll('.slide-admin-card')];
+        const srcIdx = allCards.indexOf(dragSrc);
+        const tgtIdx = allCards.indexOf(this);
+        if (srcIdx < tgtIdx) this.after(dragSrc);
+        else this.before(dragSrc);
+        renumberSlides();
+      }
+    });
+  });
+
+  async function saveOrder() {
+    const order = [...document.querySelectorAll('.slide-admin-card')].map(c => parseInt(c.dataset.id));
+    await fetch('/admin/slider/reorder', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ order })
+    });
+  }
+</script>
+</body>
+</html>

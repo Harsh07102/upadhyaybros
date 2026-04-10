@@ -1,0 +1,318 @@
+{% extends 'base.html' %}
+{% block title %}Upadhyay Brothers & Co. | Electrical Panel Manufacturers - Kanpur{% endblock %}
+
+{% block content %}
+
+<!-- ═══ HERO SLIDER ═══ -->
+<section class="hero">
+  <div class="slider-track">
+    {% for slide in slides %}
+    <div class="slide">
+      {% if slide.image_path %}
+      <div class="slide-bg" style="background-image: url('/static/{{ slide.image_path }}');"></div>
+      {% else %}
+      <div class="slide-bg" style="background:linear-gradient(135deg,var(--navy),#1a2f55);"></div>
+      {% endif %}
+      <div class="slide-overlay"></div>
+      <div class="slide-content">
+        {% if slide.eyebrow %}<div class="slide-eyebrow">{{ slide.eyebrow }}</div>{% endif %}
+        <h1 class="slide-title">{{ slide.title }}</h1>
+        {% if slide.description %}<p class="slide-desc">{{ slide.description }}</p>{% endif %}
+        <div class="slide-actions">
+          <a href="/products" class="btn-gold"><i class="fas fa-bolt"></i> Explore Products</a>
+          <button onclick="openModal('')" class="btn-outline"><i class="fas fa-paper-plane"></i> Get Quote</button>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <button class="slider-prev"><i class="fas fa-chevron-left"></i></button>
+  <button class="slider-next"><i class="fas fa-chevron-right"></i></button>
+  <div class="slider-dots">
+    {% for slide in slides %}<span class="dot"></span>{% endfor %}
+  </div>
+</section>
+
+<!-- ═══ STATS BAR ═══ -->
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat-item fade-up">
+      <div class="stat-number" data-val="20" data-suffix="+">0+</div>
+      <div class="stat-label">Years of Experience</div>
+    </div>
+    <div class="stat-item fade-up">
+      <div class="stat-number" data-val="500" data-suffix="+">0+</div>
+      <div class="stat-label">Panels Manufactured</div>
+    </div>
+    <div class="stat-item fade-up">
+      <div class="stat-number" data-val="200" data-suffix="+">0+</div>
+      <div class="stat-label">Happy Clients</div>
+    </div>
+    <div class="stat-item fade-up">
+      <div class="stat-number" data-val="9" data-suffix="">0</div>
+      <div class="stat-label">Product Categories</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ABOUT US ═══ -->
+<section class="about-section" id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-image-wrap fade-up">
+        <img src="{{ url_for('static', filename='images/main_apfc.jpeg') }}" alt="Our Work" class="about-img-main"/>
+        <div class="about-badge">
+          <div class="big-num">20+</div>
+          <p>Years of<br>Excellence</p>
+        </div>
+      </div>
+      <div class="fade-up">
+        <span class="section-tag">About Us</span>
+        <h2 class="section-title">A Legacy of <span>Electrical Excellence</span> Since 2003</h2>
+        <div class="gold-divider"></div>
+        <p class="section-desc" style="max-width:100%">
+          Upadhyay Brothers & Co. was established in 2003 by the visionary <strong>Mr. Tribhuvan Upadhyay</strong> in Mandhana, Kanpur Nagar. With a passion for quality engineering and a commitment to industrial growth, the company quickly earned its reputation as a trusted name in electrical panel manufacturing across Uttar Pradesh.
+        </p>
+        <br>
+        <p class="section-desc" style="max-width:100%; color: #4b5563;">
+          Since 2017, the company has been ably led by <strong>Mr. G.K. Upadhyay</strong>, who has expanded operations and strengthened the company's in-house manufacturing and Powder Coating units. Today, UBC boasts a team of professionally qualified engineers, skilled supervisors, and dedicated supporting staff, all working from their production facility in Mandhana — ensuring every panel delivered meets the highest standards of quality and safety.
+        </p>
+        <div class="about-features" style="margin-top: 2rem;">
+          <div class="feature-card fade-up">
+            <i class="fas fa-industry"></i>
+            <h4>In-House Manufacturing</h4>
+            <p>Complete production and Powder Coating facility at Mandhana, Kanpur Nagar</p>
+          </div>
+          <div class="feature-card fade-up">
+            <i class="fas fa-hard-hat"></i>
+            <h4>Expert Engineers</h4>
+            <p>Professionally qualified engineers and supervisors ensuring top quality</p>
+          </div>
+          <div class="feature-card fade-up">
+            <i class="fas fa-award"></i>
+            <h4>Proven Track Record</h4>
+            <p>Over 20 years of successful electrical panel manufacturing</p>
+          </div>
+          <div class="feature-card fade-up">
+            <i class="fas fa-shield-alt"></i>
+            <h4>Quality Assured</h4>
+            <p>Every panel rigorously tested before delivery to clients</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PRODUCTS PREVIEW ═══ -->
+<section class="products-section">
+  <div class="container">
+    <div class="text-center fade-up">
+      <span class="section-tag">Our Products</span>
+      <h2 class="section-title">Engineered for <span>Industrial Excellence</span></h2>
+      <div class="gold-divider"></div>
+      <p class="section-desc">From MCC Panels to Silent DG Sets, every product is manufactured with precision and care by our expert team in Kanpur.</p>
+    </div>
+    <div class="products-grid">
+
+      <div class="product-card fade-up">
+        <div class="product-img-wrap">
+          <img src="{{ url_for('static', filename='images/mcc_panel.jpeg') }}" alt="MCC Panel" class="product-card-img"/>
+          <span class="product-badge-tag">MCC Panel</span>
+        </div>
+        <div class="product-card-body">
+          <h3 class="product-card-title">Motor Control Centre (MCC) Panel</h3>
+          <p class="product-card-desc">Designed for centralized control of electric motors in industrial plants, our MCC panels offer superior reliability, modular design, and ease of maintenance for heavy-duty operations.</p>
+          <button class="btn-enquiry" onclick="openModal('MCC Panel')"><i class="fas fa-paper-plane"></i> Enquiry Now</button>
+        </div>
+      </div>
+
+      <div class="product-card fade-up">
+        <div class="product-img-wrap">
+          <img src="{{ url_for('static', filename='images/main_apfc.jpeg') }}" alt="Main APFC Panel" class="product-card-img"/>
+          <span class="product-badge-tag">Main & APFC</span>
+        </div>
+        <div class="product-card-body">
+          <h3 class="product-card-title">Main & APFC Panel</h3>
+          <p class="product-card-desc">Our Main and Automatic Power Factor Correction panels help industries optimize their power consumption, reduce electricity bills, and maintain efficient voltage levels across the facility.</p>
+          <button class="btn-enquiry" onclick="openModal('Main & APFC Panel')"><i class="fas fa-paper-plane"></i> Enquiry Now</button>
+        </div>
+      </div>
+
+      <div class="product-card fade-up">
+        <div class="product-img-wrap">
+          <img src="{{ url_for('static', filename='images/changeover_panel.jpeg') }}" alt="Changeover Panel" class="product-card-img"/>
+          <span class="product-badge-tag">Changeover</span>
+        </div>
+        <div class="product-card-body">
+          <h3 class="product-card-title">Changeover Panel</h3>
+          <p class="product-card-desc">Engineered for seamless switching between two power sources — mains and generator — our Changeover Panels ensure uninterrupted power supply with safe and reliable operation.</p>
+          <button class="btn-enquiry" onclick="openModal('Changeover Panel')"><i class="fas fa-paper-plane"></i> Enquiry Now</button>
+        </div>
+      </div>
+
+    </div>
+    <div class="text-center" style="margin-top: 2.5rem;">
+      <a href="/products" class="btn-gold"><i class="fas fa-th-large"></i> View All Products</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ WHY CHOOSE US ═══ -->
+<section class="why-section">
+  <div class="container">
+    <div class="text-center fade-up">
+      <span class="section-tag" style="background:rgba(201,168,76,0.15); border-color:rgba(201,168,76,0.4);">Why Choose Us</span>
+      <h2 class="section-title" style="color:var(--white);">The UBC <span>Advantage</span></h2>
+      <div class="gold-divider" style="margin: 1rem auto 1.5rem;"></div>
+      <p class="section-desc" style="color:rgba(255,255,255,0.65);">Two decades of trust, quality craftsmanship, and industrial expertise make us your ideal manufacturing partner.</p>
+    </div>
+    <div class="why-grid">
+      <div class="why-card fade-up">
+        <div class="why-icon"><i class="fas fa-medal"></i></div>
+        <h3>20+ Years of Expertise</h3>
+        <p>Founded in 2003, our decades of experience ensure every product is crafted with deep technical knowledge and industry insight.</p>
+      </div>
+      <div class="why-card fade-up">
+        <div class="why-icon"><i class="fas fa-tools"></i></div>
+        <h3>In-House Production</h3>
+        <p>Our own manufacturing and Powder Coating unit at Mandhana guarantees complete quality control from raw material to final delivery.</p>
+      </div>
+      <div class="why-card fade-up">
+        <div class="why-icon"><i class="fas fa-user-hard-hat"></i></div>
+        <h3>Qualified Engineering Team</h3>
+        <p>A team of professional engineers and skilled supervisors ensures every panel meets rigorous safety and performance standards.</p>
+      </div>
+      <div class="why-card fade-up">
+        <div class="why-icon"><i class="fas fa-handshake"></i></div>
+        <h3>Client-First Approach</h3>
+        <p>We work closely with each client to understand their specific requirements and deliver tailored electrical solutions on time.</p>
+      </div>
+      <div class="why-card fade-up">
+        <div class="why-icon"><i class="fas fa-bolt"></i></div>
+        <h3>Wide Product Range</h3>
+        <p>From MCC Panels to Silent DG Sets, we offer a comprehensive range of 9+ product categories to meet every industrial need.</p>
+      </div>
+      <div class="why-card fade-up">
+        <div class="why-icon"><i class="fas fa-map-marker-alt"></i></div>
+        <h3>Locally Trusted</h3>
+        <p>Based in Mandhana, Kanpur — we are deeply rooted in the industrial community of Uttar Pradesh with 200+ satisfied clients.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CONTACT SECTION ═══ -->
+<!-- ═══ CLIENTS LOGO SLIDER ═══ -->
+<section class="clients-strip">
+  <div class="clients-strip-header">
+    <span class="clients-label"><i class="fas fa-handshake"></i> Trusted By Our Clients & Partners</span>
+  </div>
+  <div class="clients-track-wrap">
+    <div class="clients-track">
+      <!-- Original set -->
+      <div class="client-logo"><img src="{{ url_for('static', filename='images/logos/l1.jpeg') }}" alt="Padam Cables - P.S. Group"/></div>
+      <div class="client-logo"><img src="{{ url_for('static', filename='images/logos/l2.jpeg') }}" alt="PVJ Power"/></div>
+      <div class="client-logo"><img src="{{ url_for('static', filename='images/logos/l3.jpeg') }}" alt="C&S Electric"/></div>
+      <div class="client-logo"><img src="{{ url_for('static', filename='images/logos/l4.jpeg') }}" alt="Subodhan"/></div>
+      <div class="client-logo"><img src="{{ url_for('static', filename='images/logos/l5.jpeg') }}" alt="PVJ Power"/></div>
+      <div class="client-logo"><img src="{{ url_for('static', filename='images/logos/l6.jpeg') }}" alt="Telergon"/></div>
+      <div class="client-logo"><img src="{{ url_for('static', filename='images/logos/l7.jpeg') }}" alt="Siemens"/></div>
+      <!-- Duplicate set for seamless infinite loop -->
+      <div class="client-logo"><img src="{{ url_for('static', filename='images/logos/l1.jpeg') }}" alt="Padam Cables - P.S. Group"/></div>
+      <div class="client-logo"><img src="{{ url_for('static', filename='images/logos/l2.jpeg') }}" alt="PVJ Power"/></div>
+      <div class="client-logo"><img src="{{ url_for('static', filename='images/logos/l3.jpeg') }}" alt="C&S Electric"/></div>
+      <div class="client-logo"><img src="{{ url_for('static', filename='images/logos/l4.jpeg') }}" alt="Subodhan"/></div>
+      <div class="client-logo"><img src="{{ url_for('static', filename='images/logos/l5.jpeg') }}" alt="PVJ Power"/></div>
+      <div class="client-logo"><img src="{{ url_for('static', filename='images/logos/l6.jpeg') }}" alt="Telergon"/></div>
+      <div class="client-logo"><img src="{{ url_for('static', filename='images/logos/l7.jpeg') }}" alt="Siemens"/></div>
+    </div>
+  </div>
+</section>
+
+<section class="contact-section" id="contact">
+  <div class="container">
+    <div class="text-center fade-up">
+      <span class="section-tag">Contact Us</span>
+      <h2 class="section-title">Get In <span>Touch</span></h2>
+      <div class="gold-divider"></div>
+      <p class="section-desc">Have a requirement? Send us a message and our team will get back to you promptly.</p>
+    </div>
+    <div class="contact-grid">
+      <div class="fade-up">
+        <div class="contact-info-item">
+          <div class="contact-icon"><i class="fas fa-industry"></i></div>
+          <div>
+            <h4>Manufacturing Unit</h4>
+            <p>Bagdoudhi, Bangar, Mandhana - Bithoor Rd,<br>Kanpur Nagar, Uttar Pradesh 209217</p>
+          </div>
+        </div>
+        <div class="contact-info-item">
+          <div class="contact-icon"><i class="fas fa-phone"></i></div>
+          <div>
+            <h4>Phone Numbers</h4>
+            <p>+91 9839136861<br>+91 9889809138</p>
+          </div>
+        </div>
+        <div class="contact-info-item">
+          <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+          <div>
+            <h4>Email Address</h4>
+            <p>upadhyaybrothers@rediffmail.com</p>
+          </div>
+        </div>
+        <div class="contact-info-item">
+          <div class="contact-icon"><i class="fas fa-clock"></i></div>
+          <div>
+            <h4>Business Hours</h4>
+            <p>Mon – Sat: 9:00 AM – 7:00 PM<br>Sunday: By Appointment</p>
+          </div>
+        </div>
+      </div>
+      <div class="contact-form-wrap fade-up">
+        <h3>Send an Enquiry</h3>
+        <form id="contactForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Full Name <span class="req">*</span></label>
+              <input type="text" id="cName" placeholder="Your name" required/>
+            </div>
+            <div class="form-group">
+              <label>Phone <span class="req">*</span></label>
+              <input type="tel" id="cPhone" placeholder="+91 XXXXX XXXXX" required/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Email <span class="req">*</span></label>
+            <input type="email" id="cEmail" placeholder="your@email.com" required/>
+          </div>
+          <div class="form-group">
+            <label>Product of Interest</label>
+            <select id="cProduct">
+              <option value="">-- Select a Product --</option>
+              <option>MCC Panel</option>
+              <option>Main & APFC Panel</option>
+              <option>Changeover Panel</option>
+              <option>Distribution Panel</option>
+              <option>AMF Panel</option>
+              <option>Feeder Pillar</option>
+              <option>Silent DG Set</option>
+              <option>Lighting Distribution Board</option>
+              <option>Power Distribution Board</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Message / Requirements <span class="opt">(Optional)</span></label>
+            <textarea id="cMessage" placeholder="Describe your requirements, specifications, quantity..."></textarea>
+          </div>
+          <button type="submit" class="btn-submit"><i class="fas fa-paper-plane"></i> Send Message</button>
+          <div id="contactMsg" class="form-msg"></div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

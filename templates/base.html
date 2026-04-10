@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}Upadhyay Brothers & Co.{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<!-- ═══ TOP BAR ═══ -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <span><i class="fas fa-phone"></i> +91 9839136861 &nbsp;|&nbsp; +91 9889809138</span>
+    <span><i class="fas fa-envelope"></i> upadhyaybrothers@rediffmail.com</span>
+    <span><i class="fas fa-map-marker-alt"></i> Mandhana, Kanpur Nagar, U.P.</span>
+  </div>
+</div>
+
+<!-- ═══ NAVBAR ═══ -->
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
+    <a href="/" class="nav-brand">
+      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="UBC Logo" class="nav-logo"/>
+      <div class="brand-text">
+        <span class="brand-name">UPADHYAY BROTHERS AND COMPANY</span>
+        <span class="brand-tagline">Est. 2003 · Mandhana, Kanpur</span>
+      </div>
+    </a>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="/" class="nav-link {% if request.path == '/' %}active{% endif %}">Home</a></li>
+      <li><a href="/products" class="nav-link {% if request.path == '/products' %}active{% endif %}">Products</a></li>
+      <li><a href="/past-work" class="nav-link {% if request.path == '/past-work' %}active{% endif %}">Past Work & Clients</a></li>
+      <li><a href="/certificates" class="nav-link {% if request.path == '/certificates' %}active{% endif %}">Certificates</a></li>
+      <li><a href="/careers" class="nav-link {% if request.path == '/careers' %}active{% endif %}">💼 Careers</a></li>
+      <li><a href="/admin" class="nav-link nav-admin"><i class="fas fa-lock"></i> Admin</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ═══ PAGE CONTENT ═══ -->
+{% block content %}{% endblock %}
+
+<!-- ═══ ENQUIRY MODAL ═══ -->
+<div class="modal-overlay" id="enquiryModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+    <div class="modal-header">
+      <div class="modal-icon"><i class="fas fa-paper-plane"></i></div>
+      <h3>Send Enquiry</h3>
+      <p id="modalProductName">Get in touch with our experts</p>
+    </div>
+    <form id="enquiryForm">
+      <input type="hidden" id="enquiryProduct" name="product"/>
+      <div class="form-group">
+        <label>Full Name <span class="req">*</span></label>
+        <input type="text" id="eName" placeholder="Your full name" required/>
+      </div>
+      <div class="form-group">
+        <label>Contact Number <span class="req">*</span></label>
+        <input type="tel" id="eContact" placeholder="+91 XXXXX XXXXX" required/>
+      </div>
+      <div class="form-group">
+        <label>Email Address <span class="req">*</span></label>
+        <input type="email" id="eEmail" placeholder="your@email.com" required/>
+      </div>
+      <div class="form-group">
+        <label>Specifications / Requirements <span class="opt">(Optional)</span></label>
+        <textarea id="eReq" placeholder="Describe your requirements, specifications, quantity, etc." rows="3"></textarea>
+      </div>
+      <button type="submit" class="btn-submit">
+        <i class="fas fa-paper-plane"></i> Submit Enquiry
+      </button>
+      <div id="formMsg" class="form-msg"></div>
+    </form>
+  </div>
+</div>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="footer">
+  <div class="footer-glow"></div>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="UBC" class="footer-logo"/>
+      <h3>UPADHYAY BROTHERS AND COMPANY</h3>
+      <p>Established in 2003, we are a trusted manufacturer of high-quality electrical panels and control systems, serving industries across Uttar Pradesh and beyond.</p>
+      <div class="social-links">
+        <a href="tel:+919839136861"><i class="fas fa-phone"></i></a>
+        <a href="mailto:upadhyaybrothers@rediffmail.com"><i class="fas fa-envelope"></i></a>
+        <a href="https://wa.me/919839136861" target="_blank"><i class="fab fa-whatsapp"></i></a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4><i class="fas fa-bolt"></i> Our Products</h4>
+      <ul>
+        <li><a href="/products">MCC Panel</a></li>
+        <li><a href="/products">Main & APFC Panel</a></li>
+        <li><a href="/products">Changeover Panel</a></li>
+        <li><a href="/products">Distribution Panel</a></li>
+        <li><a href="/products">AMF Panel</a></li>
+        <li><a href="/products">Feeder Pillar</a></li>
+        <li><a href="/products">Silent DG Set</a></li>
+        <li><a href="/products">Lighting Distribution Board</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4><i class="fas fa-sitemap"></i> Quick Links</h4>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/products">Products</a></li>
+        <li><a href="/past-work">Past Work & Clients</a></li>
+        <li><a href="/certificates">Certificates</a></li>
+        <li><a href="/careers">Careers</a></li>
+        <li><a href="/admin">Admin Login</a></li>
+      </ul>
+      <h4 style="margin-top:1.5rem"><i class="fas fa-certificate"></i> Certifications</h4>
+      <ul>
+        <li><a href="#">ISO Certified</a></li>
+        <li><a href="#">Quality Assured</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4><i class="fas fa-map-marker-alt"></i> Contact Us</h4>
+      <div class="contact-info">
+        <p><i class="fas fa-industry"></i> Bagdoudhi, Bangar,<br>Mandhana - Bithoor Rd,<br>Kanpur Nagar,<br>Uttar Pradesh 209217</p>
+        <p><i class="fas fa-phone"></i> +91 9839136861</p>
+        <p><i class="fas fa-phone"></i> +91 9889809138</p>
+        <p><i class="fas fa-envelope"></i> upadhyaybrothers@rediffmail.com</p>
+      </div>
+      <div class="map-embed">
+        <iframe src="https://maps.google.com/maps?q=Mandhana,Kanpur&output=embed" allowfullscreen loading="lazy"></iframe>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-bottom-inner">
+      <p>© 2024 Upadhyay Brothers & Co. All rights reserved. | Mandhana, Kanpur Nagar, U.P.</p>
+      <p>Founded by <strong>Mr. Tribhuvan Upadhyay</strong> · Managed by <strong>Mr. G.K. Upadhyay</strong></p>
+    </div>
+  </div>
+</footer>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>
