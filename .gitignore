@@ -2,7 +2,7 @@
 .env
 
 # Database (contains real user data)
-ubc.db
+#ubc.db
 
 # Python cache
 __pycache__/
